@@ -69,16 +69,16 @@ function HomePage() {
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
           className="mx-auto max-w-3xl text-4xl leading-[1.05] sm:text-5xl md:text-6xl"
         >
-          AI Photo Editing Prompts
+          {settings.hero_title}
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.08 }}
           className="mt-3 text-4xl font-black sm:text-5xl md:text-6xl"
         >
-          <span className="gradient-text">Gemini &amp; ChatGPT</span>
+          <span className="gradient-text">{settings.hero_gradient_text}</span>
         </motion.p>
         <p className="mx-auto mt-5 max-w-lg text-base text-muted-foreground sm:text-lg">
-          Copy, paste, and generate stunning Images in seconds.
+          {settings.hero_subtitle}
         </p>
 
         <form
