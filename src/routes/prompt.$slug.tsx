@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight, Star, Sparkles } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/page-shell";
 import { CopyButton, LikeButton, SaveButton } from "@/components/actions";
 import { PromptCard } from "@/components/prompt-card";
@@ -151,20 +151,8 @@ function PromptPage() {
             </div>
           )}
 
-          <div className="glass-card mt-6 rounded-3xl p-5">
-            <h3 className="text-sm font-semibold">Rate this prompt</h3>
-            <div className="mt-3 flex items-center gap-1">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <Star
-                  key={n}
-                  className={`h-6 w-6 ${n <= Math.round(p.rating) ? "fill-current text-amber-500" : "text-muted-foreground"}`}
-                />
-              ))}
-              <span className="ml-2 text-sm text-muted-foreground">
-                {p.rating.toFixed(1)} average
-              </span>
-            </div>
-          </div>
+          <RatingBox slug={p.slug} initial={p.rating} />
+
         </div>
       </div>
 
@@ -181,3 +169,46 @@ function PromptPage() {
     </PageShell>
   );
 }
+
+function RatingBox({ slug, initial }: { slug: string; initial: number }) {
+  const key = `rating:${slug}`;
+  const [mine, setMine] = useState<number | null>(null);
+  const [hover, setHover] = useState<number | null>(null);
+  useEffect(() => {
+    try {
+      const v = localStorage.getItem(key);
+      if (v) setMine(parseInt(v, 10));
+    } catch {}
+  }, [key]);
+
+  function rate(n: number) {
+    setMine(n);
+    try { localStorage.setItem(key, String(n)); } catch {}
+  }
+
+  const shown = hover ?? mine ?? Math.round(initial);
+  return (
+    <div className="glass-card mt-6 rounded-3xl p-5">
+      <h3 className="text-sm font-semibold">Rate this prompt</h3>
+      <div className="mt-3 flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map((n) => (
+          <button
+            key={n}
+            type="button"
+            onClick={() => rate(n)}
+            onMouseEnter={() => setHover(n)}
+            onMouseLeave={() => setHover(null)}
+            aria-label={`Rate ${n} star${n > 1 ? "s" : ""}`}
+            className="p-0.5 transition hover:scale-110"
+          >
+            <Star className={`h-7 w-7 ${n <= shown ? "fill-current text-amber-500" : "text-muted-foreground"}`} />
+          </button>
+        ))}
+        <span className="ml-3 text-sm text-muted-foreground">
+          {mine ? `Your rating: ${mine}/5` : `${initial.toFixed(1)} average`}
+        </span>
+      </div>
+    </div>
+  );
+}
+

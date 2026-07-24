@@ -14,8 +14,37 @@ function slugFromUrl(u: string) {
   return m[m.length - 1] || "";
 }
 
+function decodeEntities(s: string) {
+  return s
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&rsquo;/g, "\u2019")
+    .replace(/&lsquo;/g, "\u2018")
+    .replace(/&mdash;/g, "\u2014")
+    .replace(/&ndash;/g, "\u2013")
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n, 10)));
+}
+
 function stripHtml(html: string) {
-  return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  return decodeEntities(html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim());
+}
+
+// Preserve line breaks (for <p whitespace-pre-wrap> prompt blocks)
+function stripHtmlKeepBreaks(html: string) {
+  return decodeEntities(
+    html
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<\/(p|div|h[1-6]|li)>/gi, "\n")
+      .replace(/<[^>]+>/g, "")
+      .replace(/\r/g, "")
+      .replace(/[ \t]+\n/g, "\n")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim()
+  );
 }
 
 function firstMatch(html: string, re: RegExp): string {
@@ -34,11 +63,15 @@ function extractPost(url: string, html: string) {
     firstMatch(html, /<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i);
   const image = firstMatch(html, /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i);
 
-  // Prompt block: look for <pre> or content after "PROMPT"
-  let prompt = stripHtml(firstMatch(html, /<pre[^>]*>([\s\S]*?)<\/pre>/i));
+  // Prompt block: the <p> with class containing "whitespace-pre-wrap" and "select-all"
+  let prompt = "";
+  const promptRe = /<p[^>]*class=["'][^"']*whitespace-pre-wrap[^"']*select-all[^"']*["'][^>]*>([\s\S]*?)<\/p>/i;
+  const promptAlt = /<p[^>]*class=["'][^"']*select-all[^"']*whitespace-pre-wrap[^"']*["'][^>]*>([\s\S]*?)<\/p>/i;
+  const rawPrompt = firstMatch(html, promptRe) || firstMatch(html, promptAlt);
+  if (rawPrompt) prompt = stripHtmlKeepBreaks(rawPrompt);
   if (!prompt) {
-    const seg = firstMatch(html, /PROMPT[\s\S]{0,50}?<\/[^>]+>([\s\S]{200,3000}?)(?:Copy|Like|Share|TAGS|MODEL)/i);
-    prompt = stripHtml(seg);
+    const pre = firstMatch(html, /<pre[^>]*>([\s\S]*?)<\/pre>/i);
+    if (pre) prompt = stripHtmlKeepBreaks(pre);
   }
   if (!prompt) prompt = excerpt;
 
@@ -48,18 +81,24 @@ function extractPost(url: string, html: string) {
   ).map((m) => m[1].toLowerCase());
   const category = categoryMatches.find((c) => c && c !== "libraries") ?? null;
 
-  // Tags: from #Tag patterns or rel="tag" links
-  const hashTags = Array.from(html.matchAll(/#([A-Za-z][A-Za-z0-9\-]{1,30})/g)).map((m) => m[1].toLowerCase());
-  const relTags = Array.from(html.matchAll(/rel=["']tag["'][^>]*>([^<]+)</gi)).map((m) =>
-    m[1].trim().toLowerCase().replace(/\s+/g, "-")
+  // Tags: read from the tag chip container — anchors pointing to /library/<slug>/
+  // Use the human label (anchor text after the leading "#"), skip pure numbers/ratings.
+  const tagAnchors = Array.from(
+    html.matchAll(/<a[^>]+href=["'][^"']*\/library\/([a-z0-9-]+)\/?["'][^>]*>([\s\S]*?)<\/a>/gi)
   );
-  const tags = Array.from(new Set([...relTags, ...hashTags])).slice(0, 12);
+  const tags = Array.from(
+    new Set(
+      tagAnchors
+        .map(([, , label]) => stripHtml(label).replace(/^#\s*/, "").trim())
+        .filter((t) => t && !/^\d+(\.\d+)?$/.test(t) && t.length <= 40)
+    )
+  ).slice(0, 15);
 
   return {
     slug,
-    title: title.replace(/&amp;/g, "&").slice(0, 180),
+    title: decodeEntities(title).slice(0, 180),
     excerpt: (excerpt || "").slice(0, 400),
-    content_prompt: prompt.slice(0, 6000),
+    content_prompt: prompt.slice(0, 12000),
     featured_image: image,
     category,
     library_slug: category,
@@ -71,6 +110,7 @@ function extractPost(url: string, html: string) {
     published: true,
   };
 }
+
 
 function ImportPage() {
   const [sitemap, setSitemap] = useState(DEFAULT_SITEMAP);
