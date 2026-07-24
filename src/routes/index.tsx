@@ -30,8 +30,9 @@ function HomePage() {
   const [tab, setTab] = useState<Tab>("latest");
   const [q, setQ] = useState("");
   const posts = usePosts();
+  const settings = useSettings();
 
-  const popular = ["Men", "Woman", "Couple", "Family", "Birthday"];
+  const popular = settings.popular_tags?.length ? settings.popular_tags : ["Men", "Woman", "Couple", "Family", "Birthday"];
 
   const grid = useMemo(() => {
     if (!posts) return [];
