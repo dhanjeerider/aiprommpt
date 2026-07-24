@@ -145,104 +145,10 @@ const templates = [
   "neon cyberpunk alley, {subject}, rain, saturated magenta and cyan, cinematic bokeh, moody atmosphere --ar 16:9",
 ];
 
-export const prompts: PromptPost[] = titles.map((title, i) => {
-  const style = styles[i % styles.length].slug;
-  const category = categories[i % categories.length].slug;
-  const tool = tools[i % tools.length].slug;
-  const author = authors[i % authors.length];
-  const t = tags.slice(i % 4, (i % 4) + 4).map((x) => x.slug);
-  const slug = title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-  const tpl = templates[i % templates.length].replace("{subject}", title.toLowerCase());
-  return {
-    slug,
-    title,
-    excerpt: excerpts[i],
-    content: tpl,
-    featuredImage: IMAGES[i % IMAGES.length],
-    category,
-    tags: t,
-    tool,
-    style,
-    author,
-    likes: 120 + i * 37,
-    copies: 340 + i * 91,
-    rating: 4.4 + ((i % 6) / 10),
-    createdAt: new Date(2025, 6, 5 + i).toISOString(),
-    updatedAt: new Date(2025, 8, 5 + i).toISOString(),
-    relatedSlugs: [],
-    premium: i % 3 === 0,
-  };
-});
-
-// Fill related
-prompts.forEach((p, i) => {
-  p.relatedSlugs = [
-    prompts[(i + 1) % prompts.length].slug,
-    prompts[(i + 2) % prompts.length].slug,
-    prompts[(i + 3) % prompts.length].slug,
-    prompts[(i + 4) % prompts.length].slug,
-  ];
-});
-
-export const libraries: PromptLibrary[] = [
-  {
-    slug: "editorial-portraits",
-    title: "Editorial Portraits",
-    description: "Studio-grade portrait prompts tuned for magazine covers and lookbooks.",
-    promptCount: 42,
-    coverGradient: "from-rose-300 via-fuchsia-300 to-indigo-400",
-    categories: ["portraits", "fashion"],
-    tags: ["portrait", "editorial"],
-  },
-  {
-    slug: "cinematic-landscapes",
-    title: "Cinematic Landscapes",
-    description: "Anamorphic wide-frame vistas with painterly light and atmosphere.",
-    promptCount: 36,
-    coverGradient: "from-sky-300 via-indigo-400 to-violet-500",
-    categories: ["landscape"],
-    tags: ["cinematic"],
-  },
-  {
-    slug: "premium-product",
-    title: "Premium Product",
-    description: "Marble, glass, brushed metal — refined stills for luxury brands.",
-    promptCount: 28,
-    coverGradient: "from-slate-200 via-slate-300 to-slate-500",
-    categories: ["product"],
-    tags: ["minimal", "studio-light"],
-  },
-  {
-    slug: "surreal-dreamscapes",
-    title: "Surreal Dreamscapes",
-    description: "Painterly, otherworldly compositions with soft palettes and drift.",
-    promptCount: 31,
-    coverGradient: "from-pink-300 via-violet-400 to-purple-500",
-    categories: ["abstract"],
-    tags: ["moody"],
-  },
-  {
-    slug: "character-sheets",
-    title: "Character Sheets",
-    description: "Turnaround references and expression passes for concept work.",
-    promptCount: 24,
-    coverGradient: "from-emerald-300 via-teal-400 to-cyan-500",
-    categories: ["characters"],
-    tags: ["portrait"],
-  },
-  {
-    slug: "architectural-frames",
-    title: "Architectural Frames",
-    description: "Geometry-first interior and exterior compositions with long light.",
-    promptCount: 19,
-    coverGradient: "from-amber-200 via-orange-300 to-rose-400",
-    categories: ["architecture"],
-    tags: ["minimal"],
-  },
-];
+// Frontend now reads posts and libraries from the database (see src/lib/posts.ts).
+// These arrays remain only so any legacy import compiles. Do not add seed data here.
+export const prompts: PromptPost[] = [];
+export const libraries: PromptLibrary[] = [];
 
 export function getPromptBySlug(slug: string) {
   return prompts.find((p) => p.slug === slug);

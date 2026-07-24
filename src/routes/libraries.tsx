@@ -1,22 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { PageShell } from "@/components/page-shell";
-import { LibraryCard } from "@/components/library-card";
-import { categories, libraries, styles, tools } from "@/lib/data";
+import { usePosts } from "@/lib/posts";
 
 export const Route = createFileRoute("/libraries")({
   component: LibrariesPage,
   head: () => ({
     meta: [
-      { title: "Prompt Libraries — PrismPrompts" },
-      {
-        name: "description",
-        content:
-          "Explore curated prompt libraries organized by style, subject, and tool.",
-      },
-      { property: "og:title", content: "Prompt Libraries — PrismPrompts" },
-      { property: "og:description", content: "Curated prompt libraries for every look." },
+      { title: "Prompt Categories — PromptPalette" },
+      { name: "description", content: "Browse every prompt collection by category." },
+      { property: "og:title", content: "Prompt Categories" },
+      { property: "og:description", content: "Every AI prompt collection, by category." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/libraries" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -26,119 +20,65 @@ export const Route = createFileRoute("/libraries")({
 });
 
 function LibrariesPage() {
-  const [q, setQ] = useState("");
-  const [sort, setSort] = useState<"az" | "popular">("popular");
-  const [filter, setFilter] = useState<string>("all");
+  const posts = usePosts();
 
-  const list = useMemo(() => {
-    let l = [...libraries];
-    if (filter !== "all") l = l.filter((x) => x.categories.includes(filter));
-    if (q.trim()) {
-      const s = q.toLowerCase();
-      l = l.filter(
-        (x) =>
-          x.title.toLowerCase().includes(s) ||
-          x.description.toLowerCase().includes(s)
-      );
-    }
-    if (sort === "az") l.sort((a, b) => a.title.localeCompare(b.title));
-    else l.sort((a, b) => b.promptCount - a.promptCount);
-    return l;
-  }, [q, sort, filter]);
-
-  const chips = [
-    { key: "all", label: "All" },
-    ...categories.slice(0, 6).map((c) => ({ key: c.slug, label: c.name })),
-  ];
+  const categories = useMemo(() => {
+    if (!posts) return [];
+    const map = new Map<string, { slug: string; count: number; cover: string }>();
+    posts.forEach((p) => {
+      if (!p.category) return;
+      const cur = map.get(p.category);
+      if (cur) cur.count += 1;
+      else map.set(p.category, { slug: p.category, count: 1, cover: p.featuredImage });
+    });
+    return [...map.values()].sort((a, b) => b.count - a.count);
+  }, [posts]);
 
   return (
     <PageShell>
       <header className="max-w-3xl">
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-          Prompt <span className="gradient-text">libraries</span>
+          Prompt <span className="gradient-text">categories</span>
         </h1>
         <p className="mt-4 text-muted-foreground">
-          Curated collections organized by mood, subject, and technique — everything
-          you need to move from idea to render.
+          Every AI photo editing prompt on the site, grouped by category.
         </p>
       </header>
 
-      <div className="glass-card mt-8 flex items-center gap-2 rounded-full p-1.5 pl-5">
-        <Search className="h-4 w-4 text-muted-foreground" />
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Search libraries…"
-          className="w-full bg-transparent py-2 text-sm outline-none placeholder:text-muted-foreground"
-        />
-      </div>
-
-      <div className="mt-5 flex flex-wrap items-center gap-2">
-        {chips.map((c) => (
-          <button
-            key={c.key}
-            onClick={() => setFilter(c.key)}
-            className={`rounded-full border px-3.5 py-1.5 text-xs font-medium capitalize transition ${
-              filter === c.key
-                ? "border-transparent bg-[image:var(--gradient-primary)] text-white"
-                : "bg-white/60 text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {c.label}
-          </button>
-        ))}
-        <div className="ml-auto glass-card inline-flex rounded-full p-1">
-          {(["popular", "az"] as const).map((s) => (
-            <button
-              key={s}
-              onClick={() => setSort(s)}
-              className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
-                sort === s ? "bg-[image:var(--gradient-primary)] text-white" : "text-muted-foreground"
-              }`}
-            >
-              {s === "az" ? "A–Z" : "Most Popular"}
-            </button>
+      {posts === null ? (
+        <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="aspect-[4/3] animate-pulse rounded-3xl bg-white/5" />
           ))}
         </div>
-      </div>
-
-      {list.length === 0 ? (
+      ) : categories.length === 0 ? (
         <div className="glass-card mt-10 rounded-3xl p-10 text-center">
-          <h3 className="text-lg font-semibold">No libraries match your search</h3>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Try a broader query or clear the filters.
-          </p>
+          <h3 className="text-lg font-semibold">No categories yet</h3>
+          <p className="mt-2 text-sm text-muted-foreground">Add posts from the admin — categories appear automatically.</p>
         </div>
       ) : (
-        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {list.map((lib, i) => (
-            <LibraryCard key={lib.slug} lib={lib} index={i} />
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          {categories.map((c) => (
+            <Link
+              key={c.slug}
+              to="/category/$slug"
+              params={{ slug: c.slug }}
+              className="hover-lift group relative overflow-hidden rounded-3xl border border-white/10 bg-card"
+            >
+              <div className="relative aspect-[4/3] overflow-hidden">
+                <img src={c.cover} alt={c.slug} loading="lazy" className="h-full w-full object-cover transition group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                <div className="absolute inset-x-3 bottom-3 flex items-end justify-between text-white">
+                  <div className="text-sm font-black capitalize drop-shadow">{c.slug.replace(/-/g, " ")}</div>
+                  <div className="rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-black text-slate-900">
+                    {c.count}
+                  </div>
+                </div>
+              </div>
+            </Link>
           ))}
         </div>
       )}
-
-      <section className="mt-16 grid gap-4 sm:grid-cols-2">
-        <div className="glass-card rounded-3xl p-6">
-          <h3 className="text-sm font-semibold text-muted-foreground">Styles</h3>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {styles.map((s) => (
-              <span key={s.slug} className="rounded-full border bg-white/60 px-3 py-1 text-xs">
-                {s.name}
-              </span>
-            ))}
-          </div>
-        </div>
-        <div className="glass-card rounded-3xl p-6">
-          <h3 className="text-sm font-semibold text-muted-foreground">Tools</h3>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {tools.map((t) => (
-              <span key={t.slug} className="rounded-full border bg-white/60 px-3 py-1 text-xs capitalize">
-                {t.name}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
     </PageShell>
   );
 }

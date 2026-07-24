@@ -1,79 +1,73 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight, Star, Sparkles } from "lucide-react";
+import { useMemo } from "react";
 import { PageShell } from "@/components/page-shell";
 import { CopyButton, LikeButton, SaveButton } from "@/components/actions";
 import { PromptCard } from "@/components/prompt-card";
-import { getPromptBySlug, getRelated } from "@/lib/data";
+import { usePostBySlug, usePosts } from "@/lib/posts";
 
 export const Route = createFileRoute("/prompt/$slug")({
-  loader: ({ params }) => {
-    const p = getPromptBySlug(params.slug);
-    if (!p) throw notFound();
-    return p;
-  },
-  head: ({ loaderData }) => {
-    const p = loaderData;
-    if (!p) return { meta: [{ title: "Prompt" }] };
-    return {
-      meta: [
-        { title: `${p.title} — PrismPrompts` },
-        { name: "description", content: p.excerpt },
-        { property: "og:title", content: p.title },
-        { property: "og:description", content: p.excerpt },
-        { property: "og:type", content: "article" },
-        { property: "og:url", content: `/prompt/${p.slug}` },
-        { property: "og:image", content: p.featuredImage },
-        { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:image", content: p.featuredImage },
-      ],
-      links: [{ rel: "canonical", href: `/prompt/${p.slug}` }],
-      scripts: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "CreativeWork",
-            name: p.title,
-            description: p.excerpt,
-            image: p.featuredImage,
-            author: { "@type": "Person", name: p.author.name },
-            aggregateRating: {
-              "@type": "AggregateRating",
-              ratingValue: p.rating,
-              reviewCount: Math.max(10, Math.round(p.likes / 4)),
-            },
-          }),
-        },
-      ],
-    };
-  },
   component: PromptPage,
-  notFoundComponent: () => (
-    <PageShell>
-      <div className="glass-card rounded-3xl p-10 text-center">
-        <h1 className="text-2xl font-bold">Prompt not found</h1>
-        <p className="mt-2 text-muted-foreground">The prompt you're looking for doesn't exist.</p>
-        <Link to="/libraries" className="mt-6 inline-flex rounded-full bg-[image:var(--gradient-primary)] px-5 py-2.5 text-sm font-semibold text-white">
-          Browse libraries
-        </Link>
-      </div>
-    </PageShell>
-  ),
+  head: ({ params }) => ({
+    meta: [
+      { title: `${params.slug.replace(/-/g, " ")} — PromptPalette` },
+      { name: "description", content: `AI photo editing prompt — ${params.slug.replace(/-/g, " ")}.` },
+      { property: "og:title", content: params.slug.replace(/-/g, " ") },
+      { property: "og:type", content: "article" },
+      { property: "og:url", content: `/prompt/${params.slug}` },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [{ rel: "canonical", href: `/prompt/${params.slug}` }],
+  }),
 });
 
 function PromptPage() {
-  const p = Route.useLoaderData();
-  const related = getRelated(p);
+  const { slug } = Route.useParams();
+  const { post: p, loading } = usePostBySlug(slug);
+  const posts = usePosts();
+
+  const related = useMemo(() => {
+    if (!p || !posts) return [];
+    return posts
+      .filter((x) => x.slug !== p.slug && (x.category === p.category || (x.tags ?? []).some((t) => (p.tags ?? []).includes(t))))
+      .slice(0, 4);
+  }, [p, posts]);
+
+  if (loading) {
+    return (
+      <PageShell>
+        <div className="glass-card mt-8 h-96 animate-pulse rounded-3xl" />
+      </PageShell>
+    );
+  }
+
+  if (!p) {
+    return (
+      <PageShell>
+        <div className="glass-card rounded-3xl p-10 text-center">
+          <h1 className="text-2xl font-bold">Prompt not found</h1>
+          <p className="mt-2 text-muted-foreground">The prompt you're looking for doesn't exist.</p>
+          <Link to="/" className="mt-6 inline-flex btn-gradient rounded-full px-5 py-2.5 text-sm">
+            Back home
+          </Link>
+        </div>
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell>
       <nav className="flex items-center gap-1.5 text-xs text-muted-foreground">
         <Link to="/" className="hover:text-foreground">Home</Link>
         <ChevronRight className="h-3 w-3" />
-        <Link to="/category/$slug" params={{ slug: p.category }} className="capitalize hover:text-foreground">
-          {p.category}
-        </Link>
-        <ChevronRight className="h-3 w-3" />
+        {p.category && (
+          <>
+            <Link to="/category/$slug" params={{ slug: p.category }} className="capitalize hover:text-foreground">
+              {p.category.replace(/-/g, " ")}
+            </Link>
+            <ChevronRight className="h-3 w-3" />
+          </>
+        )}
         <span className="line-clamp-1 text-foreground">{p.title}</span>
       </nav>
 
@@ -82,24 +76,28 @@ function PromptPage() {
           <div className="relative overflow-hidden rounded-3xl">
             <img src={p.featuredImage} alt={p.title} className="aspect-[4/5] w-full object-cover" />
             {p.premium && (
-              <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold shadow-sm">
-                <Sparkles className="h-3 w-3 text-[hsl(262_83%_58%)]" /> Premium
+              <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-slate-900 shadow-sm">
+                <Sparkles className="h-3 w-3" /> Premium
               </span>
             )}
           </div>
-          <div className="mt-3 grid grid-cols-4 gap-2">
-            {related.slice(0, 4).map((r) => (
-              <Link key={r.slug} to="/prompt/$slug" params={{ slug: r.slug }} className="overflow-hidden rounded-xl border">
-                <img src={r.featuredImage} alt={r.title} className="aspect-square w-full object-cover" />
-              </Link>
-            ))}
-          </div>
+          {related.length > 0 && (
+            <div className="mt-3 grid grid-cols-4 gap-2">
+              {related.slice(0, 4).map((r) => (
+                <Link key={r.slug} to="/prompt/$slug" params={{ slug: r.slug }} className="overflow-hidden rounded-xl border border-white/10">
+                  <img src={r.featuredImage} alt={r.title} className="aspect-square w-full object-cover" />
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="lg:sticky lg:top-28 lg:self-start">
-          <span className="rounded-full border bg-white/70 px-2.5 py-1 text-[11px] font-medium capitalize">
-            {p.tool.replace("-", " ")}
-          </span>
+          {p.tool && (
+            <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-medium capitalize text-muted-foreground">
+              {p.tool.replace("-", " ")}
+            </span>
+          )}
           <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{p.title}</h1>
           <div className="mt-3 flex items-center gap-3 text-sm text-muted-foreground">
             <span className="inline-flex items-center gap-2">
@@ -113,8 +111,6 @@ function PromptPage() {
               <Star className="h-3.5 w-3.5 fill-current text-amber-500" />
               {p.rating.toFixed(1)}
             </span>
-            <span>·</span>
-            <span>{p.copies} copies</span>
           </div>
           <p className="mt-4 text-muted-foreground">{p.excerpt}</p>
 
@@ -129,26 +125,28 @@ function PromptPage() {
               <h3 className="text-sm font-semibold">Prompt</h3>
               <CopyButton text={p.content} className="px-3 py-1.5 text-xs" />
             </div>
-            <pre className="mt-3 whitespace-pre-wrap rounded-2xl bg-[hsl(240_40%_98%)] p-4 font-mono text-[13px] leading-relaxed text-foreground">
+            <pre className="mt-3 whitespace-pre-wrap rounded-2xl border border-white/10 bg-black/30 p-4 font-mono text-[13px] leading-relaxed text-foreground">
               {p.content}
             </pre>
           </div>
 
-          <div className="mt-6">
-            <h3 className="text-sm font-semibold">Tags</h3>
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {p.tags.map((t: string) => (
-                <Link
-                  key={t}
-                  to="/tag/$slug"
-                  params={{ slug: t }}
-                  className="rounded-full border bg-white/60 px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground"
-                >
-                  #{t}
-                </Link>
-              ))}
+          {(p.tags ?? []).length > 0 && (
+            <div className="mt-6">
+              <h3 className="text-sm font-semibold">Tags</h3>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {p.tags.map((t: string) => (
+                  <Link
+                    key={t}
+                    to="/tag/$slug"
+                    params={{ slug: t }}
+                    className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-muted-foreground hover:bg-white/10 hover:text-foreground"
+                  >
+                    #{t}
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="glass-card mt-6 rounded-3xl p-5">
             <h3 className="text-sm font-semibold">Rate this prompt</h3>
@@ -167,14 +165,16 @@ function PromptPage() {
         </div>
       </div>
 
-      <section className="mt-20">
-        <h2 className="text-2xl font-bold tracking-tight">You might also like</h2>
-        <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {related.map((r, i) => (
-            <PromptCard key={r.slug} p={r} index={i} />
-          ))}
-        </div>
-      </section>
+      {related.length > 0 && (
+        <section className="mt-20">
+          <h2 className="text-2xl font-bold tracking-tight">You might also like</h2>
+          <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {related.map((r, i) => (
+              <PromptCard key={r.slug} p={r} index={i} />
+            ))}
+          </div>
+        </section>
+      )}
     </PageShell>
   );
 }

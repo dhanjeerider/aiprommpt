@@ -12,11 +12,11 @@ export function SiteFooter() {
                 <Sparkles className="h-4 w-4" />
               </span>
               <span className="text-lg font-bold">
-                Prism<span className="gradient-text">Prompts</span>
+                Prompt<span className="gradient-text">Palette</span>
               </span>
             </div>
             <p className="mt-4 max-w-sm text-sm text-muted-foreground">
-              A curated library of tested prompts for the leading AI image tools.
+              A curated library of tested AI photo editing prompts for Gemini, ChatGPT and more.
               Browse, copy, and create with confidence.
             </p>
             <div className="mt-5 flex gap-2">
@@ -25,7 +25,7 @@ export function SiteFooter() {
                   key={i}
                   href="#"
                   aria-label="Social"
-                  className="grid h-9 w-9 place-items-center rounded-full border bg-white/60 text-muted-foreground transition hover:text-foreground"
+                  className="grid h-9 w-9 place-items-center rounded-full border border-white/10 bg-white/5 text-muted-foreground transition hover:bg-white/10 hover:text-foreground"
                 >
                   <Icon className="h-4 w-4" />
                 </a>
@@ -36,10 +36,10 @@ export function SiteFooter() {
           <div>
             <h4 className="text-sm font-semibold">Explore</h4>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/libraries" className="hover:text-foreground">Libraries</Link></li>
-              <li><Link to="/category/portraits" className="hover:text-foreground">Categories</Link></li>
-              <li><Link to="/style/cinematic" className="hover:text-foreground">Styles</Link></li>
+              <li><Link to="/" className="hover:text-foreground">Home</Link></li>
+              <li><Link to="/libraries" className="hover:text-foreground">Categories</Link></li>
               <li><Link to="/premium" className="hover:text-foreground">Premium</Link></li>
+              <li><Link to="/auth" className="hover:text-foreground">Sign in</Link></li>
             </ul>
           </div>
 
@@ -55,8 +55,8 @@ export function SiteFooter() {
             </ul>
           </div>
         </div>
-        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t pt-6 text-xs text-muted-foreground sm:flex-row">
-          <span>© {new Date().getFullYear()} PrismPrompts. Crafted for creators.</span>
+        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-muted-foreground sm:flex-row">
+          <span>© {new Date().getFullYear()} PromptPalette. Crafted for creators.</span>
           <span>Made with care · Tested prompts for major AI tools</span>
         </div>
       </div>
