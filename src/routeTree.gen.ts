@@ -32,6 +32,7 @@ import { Route as AuthenticatedAdminPostsRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminPagesRouteImport } from './routes/_authenticated/admin/pages'
 import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenticated/admin/orders'
 import { Route as AuthenticatedAdminLibrariesRouteImport } from './routes/_authenticated/admin/libraries'
+import { Route as AuthenticatedAdminImportRouteImport } from './routes/_authenticated/admin/import'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -150,6 +151,12 @@ const AuthenticatedAdminLibrariesRoute =
     path: '/libraries',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminImportRoute =
+  AuthenticatedAdminImportRouteImport.update({
+    id: '/import',
+    path: '/import',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -168,6 +175,7 @@ export interface FileRoutesByFullPath {
   '/style/$slug': typeof StyleSlugRoute
   '/tag/$slug': typeof TagSlugRoute
   '/tool/$slug': typeof ToolSlugRoute
+  '/admin/import': typeof AuthenticatedAdminImportRoute
   '/admin/libraries': typeof AuthenticatedAdminLibrariesRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/admin/pages': typeof AuthenticatedAdminPagesRoute
@@ -191,6 +199,7 @@ export interface FileRoutesByTo {
   '/style/$slug': typeof StyleSlugRoute
   '/tag/$slug': typeof TagSlugRoute
   '/tool/$slug': typeof ToolSlugRoute
+  '/admin/import': typeof AuthenticatedAdminImportRoute
   '/admin/libraries': typeof AuthenticatedAdminLibrariesRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/admin/pages': typeof AuthenticatedAdminPagesRoute
@@ -217,6 +226,7 @@ export interface FileRoutesById {
   '/style/$slug': typeof StyleSlugRoute
   '/tag/$slug': typeof TagSlugRoute
   '/tool/$slug': typeof ToolSlugRoute
+  '/_authenticated/admin/import': typeof AuthenticatedAdminImportRoute
   '/_authenticated/admin/libraries': typeof AuthenticatedAdminLibrariesRoute
   '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/_authenticated/admin/pages': typeof AuthenticatedAdminPagesRoute
@@ -243,6 +253,7 @@ export interface FileRouteTypes {
     | '/style/$slug'
     | '/tag/$slug'
     | '/tool/$slug'
+    | '/admin/import'
     | '/admin/libraries'
     | '/admin/orders'
     | '/admin/pages'
@@ -266,6 +277,7 @@ export interface FileRouteTypes {
     | '/style/$slug'
     | '/tag/$slug'
     | '/tool/$slug'
+    | '/admin/import'
     | '/admin/libraries'
     | '/admin/orders'
     | '/admin/pages'
@@ -291,6 +303,7 @@ export interface FileRouteTypes {
     | '/style/$slug'
     | '/tag/$slug'
     | '/tool/$slug'
+    | '/_authenticated/admin/import'
     | '/_authenticated/admin/libraries'
     | '/_authenticated/admin/orders'
     | '/_authenticated/admin/pages'
@@ -481,10 +494,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminLibrariesRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/import': {
+      id: '/_authenticated/admin/import'
+      path: '/import'
+      fullPath: '/admin/import'
+      preLoaderRoute: typeof AuthenticatedAdminImportRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
   }
 }
 
 interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminImportRoute: typeof AuthenticatedAdminImportRoute
   AuthenticatedAdminLibrariesRoute: typeof AuthenticatedAdminLibrariesRoute
   AuthenticatedAdminOrdersRoute: typeof AuthenticatedAdminOrdersRoute
   AuthenticatedAdminPagesRoute: typeof AuthenticatedAdminPagesRoute
@@ -495,6 +516,7 @@ interface AuthenticatedAdminRouteRouteChildren {
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
+    AuthenticatedAdminImportRoute: AuthenticatedAdminImportRoute,
     AuthenticatedAdminLibrariesRoute: AuthenticatedAdminLibrariesRoute,
     AuthenticatedAdminOrdersRoute: AuthenticatedAdminOrdersRoute,
     AuthenticatedAdminPagesRoute: AuthenticatedAdminPagesRoute,

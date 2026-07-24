@@ -69,8 +69,8 @@
   --input: hsl(224 30% 20%);
   --ring: hsl(217 91% 60%);
 
-  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.35);
-  --shadow-lift: 0 20px 50px -12px rgba(0, 0, 0, 0.55);
+  --shadow-soft: 0 6px 18px rgba(0, 0, 0, 0.14);
+  --shadow-lift: 0 12px 32px -12px rgba(0, 0, 0, 0.28);
 
   --gradient-bg:
     radial-gradient(1200px 700px at 10% -10%, hsl(240 80% 20% / 0.55) 0%, transparent 60%),
