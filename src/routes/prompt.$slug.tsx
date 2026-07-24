@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight, Star, Sparkles } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/page-shell";
 import { CopyButton, LikeButton, SaveButton } from "@/components/actions";
 import { PromptCard } from "@/components/prompt-card";
