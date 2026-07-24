@@ -35,26 +35,26 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-3 z-50 mx-auto w-full max-w-5xl px-3 sm:top-4 sm:px-4">
-      <div className="glass-strong flex items-center gap-2 rounded-full px-2.5 py-2 sm:px-3">
+      <div className="glass-strong flex items-center gap-1 rounded-full px-2 py-1.5 sm:gap-2 sm:px-3 sm:py-2">
         <Link to="/" className="flex items-center gap-2 pl-1">
-          <span className="grid h-10 w-10 place-items-center rounded-full bg-white text-transparent shadow-md" aria-label="PromptPalette">
+          <span className="grid h-9 w-9 place-items-center rounded-full bg-white text-transparent shadow-md sm:h-10 sm:w-10" aria-label="PromptPalette">
             <span className="bg-[image:var(--gradient-primary)] bg-clip-text text-lg font-black">P</span>
           </span>
           <span className="hidden text-sm font-black tracking-tight sm:inline">Prompt<span className="gradient-text">Palette</span></span>
         </Link>
 
-        <div className="ml-auto flex items-center gap-1.5">
-          <Link to="/premium" aria-label="Premium" className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-foreground transition hover:bg-white/10">
-            <Crown className="h-4 w-4" />
+        <div className="ml-auto flex items-center gap-0.5 sm:gap-1.5">
+          <Link to="/premium" aria-label="Premium" className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-foreground transition hover:bg-white/10 sm:h-10 sm:w-10">
+            <Crown className="h-[18px] w-[18px]" />
           </Link>
           <Link to="/libraries" aria-label="Categories" className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-foreground transition hover:bg-white/10">
-            <Smile className="h-4 w-4" />
+            <Smile className="h-[18px] w-[18px]" />
           </Link>
           <button aria-label="Search" onClick={() => setShowSearch((v) => !v)} className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-foreground transition hover:bg-white/10">
-            <Search className="h-4 w-4" />
+            <Search className="h-[18px] w-[18px]" />
           </button>
           <button aria-label="Toggle theme" onClick={toggleTheme} className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-foreground transition hover:bg-white/10">
-            {dark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+            {dark ? <Moon className="h-[18px] w-[18px]" /> : <Sun className="h-[18px] w-[18px]" />}
           </button>
         </div>
       </div>
