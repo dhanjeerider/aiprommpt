@@ -6,6 +6,7 @@ import { PageShell } from "@/components/page-shell";
 import { PromptCard } from "@/components/prompt-card";
 import { AdSlot } from "@/components/ad-slot";
 import { usePosts } from "@/lib/posts";
+import { useSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
