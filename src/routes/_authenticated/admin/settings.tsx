@@ -71,14 +71,14 @@ function SettingsAdmin() {
   async function upl(k: "logo_url" | "favicon_url" | "upi_qr_url", f: File) {
     const u = await uploadImage(f);
     if (!u) return toast.error("Upload failed");
-    // Persist immediately so it survives even if user forgets to click Save
-    const { error } = await supabase.from("site_settings").update({ [k]: u }).eq("id", 1);
+    const patch: any = { [k]: u };
+    const { error } = await supabase.from("site_settings").update(patch).eq("id", 1);
     if (error) return toast.error(error.message);
     set(k, u);
     toast.success("Uploaded and saved");
   }
 
-  const textFields: [keyof Settings, string, "input" | "textarea"?][] = [
+  const textFields: Array<[keyof Settings, string, "textarea"?]> = [
     ["site_title", "Site title"],
     ["site_tagline", "Tagline", "textarea"],
     ["hero_title", "Hero title"],
