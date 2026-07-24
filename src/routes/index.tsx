@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { motion } from "motion/react";
 import { Search, Clock, Flame, Sparkles, ArrowRight } from "lucide-react";
@@ -28,7 +28,6 @@ type Tab = "latest" | "trending" | "popular";
 function HomePage() {
   const [tab, setTab] = useState<Tab>("latest");
   const [q, setQ] = useState("");
-  const nav = useNavigate();
   const posts = usePosts();
 
   const popular = ["Men", "Woman", "Couple", "Family", "Birthday"];

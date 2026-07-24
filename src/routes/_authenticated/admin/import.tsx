@@ -42,9 +42,18 @@ function extractPost(url: string, html: string) {
   }
   if (!prompt) prompt = excerpt;
 
-  // Tags: from #Tag patterns or a TAGS block
-  const tagMatches = Array.from(html.matchAll(/#([A-Za-z][A-Za-z0-9&\- ]{1,30})/g)).map(m => m[1].trim().toLowerCase());
-  const tags = Array.from(new Set(tagMatches)).slice(0, 8);
+  // Category: first /library/<slug>/ link (excluding the index)
+  const categoryMatches = Array.from(
+    html.matchAll(/href=["'][^"']*\/library\/([a-z0-9-]+)\/?["']/gi)
+  ).map((m) => m[1].toLowerCase());
+  const category = categoryMatches.find((c) => c && c !== "libraries") ?? null;
+
+  // Tags: from #Tag patterns or rel="tag" links
+  const hashTags = Array.from(html.matchAll(/#([A-Za-z][A-Za-z0-9\-]{1,30})/g)).map((m) => m[1].toLowerCase());
+  const relTags = Array.from(html.matchAll(/rel=["']tag["'][^>]*>([^<]+)</gi)).map((m) =>
+    m[1].trim().toLowerCase().replace(/\s+/g, "-")
+  );
+  const tags = Array.from(new Set([...relTags, ...hashTags])).slice(0, 12);
 
   return {
     slug,
@@ -52,11 +61,11 @@ function extractPost(url: string, html: string) {
     excerpt: (excerpt || "").slice(0, 400),
     content_prompt: prompt.slice(0, 6000),
     featured_image: image,
-    category: tags[0] ?? null,
-    library_slug: null,
+    category,
+    library_slug: category,
     tags,
     tool: "gemini",
-    author_name: "PromptPrime",
+    author_name: "PromptPalette",
     premium: false,
     likes: 0,
     published: true,
