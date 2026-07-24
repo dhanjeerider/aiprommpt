@@ -137,7 +137,7 @@ function PromptPage() {
           <div className="mt-6">
             <h3 className="text-sm font-semibold">Tags</h3>
             <div className="mt-2 flex flex-wrap gap-1.5">
-              {p.tags.map((t) => (
+              {p.tags.map((t: string) => (
                 <Link
                   key={t}
                   to="/tag/$slug"
