@@ -8,6 +8,7 @@ export type PostRow = {
   title: string;
   excerpt: string | null;
   content_prompt: string | null;
+  extra_prompts: string[] | null;
   featured_image: string | null;
   extra_images: string[] | null;
   category: string | null;
@@ -36,13 +37,14 @@ function initials(name: string) {
     .toUpperCase();
 }
 
-export function rowToPost(r: PostRow): PromptPost {
+export function rowToPost(r: PostRow): PromptPost & { extraPrompts: string[] } {
   const authorName = r.author_name ?? "PromptPalette";
   return {
     slug: r.slug,
     title: r.title,
     excerpt: r.excerpt ?? "",
     content: r.content_prompt ?? "",
+    extraPrompts: (r.extra_prompts ?? []).filter(Boolean),
     featuredImage: r.featured_image ?? "",
     category: r.category ?? "",
     tags: r.tags ?? [],
@@ -63,6 +65,7 @@ export function rowToPost(r: PostRow): PromptPost {
     premium: !!r.premium,
   };
 }
+
 
 export function usePosts() {
   const [posts, setPosts] = useState<PromptPost[] | null>(null);

@@ -8,13 +8,14 @@ export const Route = createFileRoute("/_authenticated/admin/posts")({ component:
 
 type Post = {
   id: string; slug: string; title: string; excerpt: string; content_prompt: string;
+  extra_prompts: string[];
   featured_image: string; category: string | null; library_slug: string | null;
   tags: string[]; tool: string | null; author_name: string; premium: boolean;
   likes: number; published: boolean;
 };
 
 const empty: Omit<Post, "id"> = {
-  slug: "", title: "", excerpt: "", content_prompt: "", featured_image: "",
+  slug: "", title: "", excerpt: "", content_prompt: "", extra_prompts: [], featured_image: "",
   category: "", library_slug: "", tags: [], tool: "gemini", author_name: "PromptPalette",
   premium: false, likes: 0, published: true,
 };
@@ -75,14 +76,40 @@ function PostsAdmin() {
           <label key={k} className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
             {k}
             {k === "excerpt" || k === "content_prompt" ? (
-              <textarea rows={k === "content_prompt" ? 6 : 2} value={(editing as any)[k] ?? ""} onChange={e => setEditing({ ...editing, [k]: e.target.value })}
-                className="mt-1 w-full rounded-2xl border border-white/10 bg-white/5 p-3 text-sm text-foreground outline-none" />
+              <textarea rows={k === "content_prompt" ? 14 : 2} value={(editing as any)[k] ?? ""} onChange={e => setEditing({ ...editing, [k]: e.target.value })}
+                className="mt-1 w-full rounded-2xl border border-white/10 bg-white/5 p-3 text-sm text-foreground outline-none font-mono" />
             ) : (
               <input value={(editing as any)[k] ?? ""} onChange={e => setEditing({ ...editing, [k]: e.target.value })}
                 className="mt-1 w-full rounded-2xl border border-white/10 bg-white/5 p-3 text-sm text-foreground outline-none" />
             )}
           </label>
         ))}
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="flex items-center justify-between">
+            <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Additional prompts (users can copy each separately)</div>
+            <button type="button" onClick={() => setEditing({ ...editing, extra_prompts: [...(editing.extra_prompts ?? []), ""] })}
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs">+ Add prompt</button>
+          </div>
+          <div className="mt-3 space-y-3">
+            {(editing.extra_prompts ?? []).map((val, i) => (
+              <div key={i} className="rounded-xl border border-white/10 bg-black/20 p-3">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-[11px] font-bold uppercase text-muted-foreground">Prompt {i + 2}</span>
+                  <button type="button" onClick={() => setEditing({ ...editing, extra_prompts: editing.extra_prompts.filter((_, j) => j !== i) })}
+                    className="text-xs text-red-400 hover:underline">Remove</button>
+                </div>
+                <textarea rows={8} value={val} onChange={e => {
+                  const next = [...editing.extra_prompts]; next[i] = e.target.value;
+                  setEditing({ ...editing, extra_prompts: next });
+                }} className="w-full rounded-lg border border-white/10 bg-white/5 p-2 text-sm font-mono outline-none" />
+              </div>
+            ))}
+            {(editing.extra_prompts ?? []).length === 0 && (
+              <div className="text-xs text-muted-foreground">Only the main prompt above. Click "+ Add prompt" to include more.</div>
+            )}
+          </div>
+        </div>
+
         <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
           Tags (comma separated)
           <input value={tagsStr} onChange={e => setTagsStr(e.target.value)}

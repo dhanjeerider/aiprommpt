@@ -156,6 +156,7 @@ export type Database = {
           created_at: string
           excerpt: string
           extra_images: string[]
+          extra_prompts: string[]
           featured_image: string
           id: string
           library_slug: string | null
@@ -179,6 +180,7 @@ export type Database = {
           created_at?: string
           excerpt?: string
           extra_images?: string[]
+          extra_prompts?: string[]
           featured_image?: string
           id?: string
           library_slug?: string | null
@@ -202,6 +204,7 @@ export type Database = {
           created_at?: string
           excerpt?: string
           extra_images?: string[]
+          extra_prompts?: string[]
           featured_image?: string
           id?: string
           library_slug?: string | null

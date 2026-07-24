@@ -1,12 +1,15 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Crown, Smile, Search, Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useSettings } from "@/lib/settings";
 
 export function SiteHeader() {
+  const settings = useSettings();
   const [dark, setDark] = useState(true);
   const [q, setQ] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const navigate = useNavigate();
+
 
   useEffect(() => {
     const saved = typeof window !== "undefined" && localStorage.getItem("theme");
@@ -37,11 +40,16 @@ export function SiteHeader() {
     <header className="sticky top-3 z-50 mx-auto w-full max-w-5xl px-3 sm:top-4 sm:px-4">
       <div className="glass-strong flex items-center gap-1 rounded-full px-2 py-1.5 sm:gap-2 sm:px-3 sm:py-2">
         <Link to="/" className="flex items-center gap-2 pl-1">
-          <span className="grid h-9 w-9 place-items-center rounded-full bg-white text-transparent shadow-md sm:h-10 sm:w-10" aria-label="PromptPalette">
-            <span className="bg-[image:var(--gradient-primary)] bg-clip-text text-lg font-black">P</span>
-          </span>
-          <span className="hidden text-sm font-black tracking-tight sm:inline">Prompt<span className="gradient-text">Palette</span></span>
+          {settings.logo_url ? (
+            <img src={settings.logo_url} alt={settings.site_title} className="h-9 w-9 rounded-full object-cover shadow-md sm:h-10 sm:w-10" />
+          ) : (
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-white text-transparent shadow-md sm:h-10 sm:w-10" aria-label={settings.site_title}>
+              <span className="bg-[image:var(--gradient-primary)] bg-clip-text text-lg font-black">{settings.site_title[0] ?? "P"}</span>
+            </span>
+          )}
+          <span className="hidden text-sm font-black tracking-tight sm:inline">{settings.site_title}</span>
         </Link>
+
 
         <div className="ml-auto flex items-center gap-0.5 sm:gap-1.5">
           <Link to="/premium" aria-label="Premium" className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-foreground transition hover:bg-white/10 sm:h-10 sm:w-10">
