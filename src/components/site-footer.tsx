@@ -1,7 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { Sparkles, Github, Twitter, Instagram } from "lucide-react";
+import { useSettings } from "@/lib/settings";
 
 export function SiteFooter() {
+  const settings = useSettings();
+
   return (
     <footer className="mx-auto mt-24 w-full max-w-6xl px-4 pb-10">
       <div className="glass-card rounded-3xl p-8 sm:p-10">
