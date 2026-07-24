@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { useSettings } from "@/lib/settings";
 
 export function SiteHeader() {
+  const settings = useSettings();
   const [dark, setDark] = useState(true);
   const [q, setQ] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const navigate = useNavigate();
+
 
   useEffect(() => {
     const saved = typeof window !== "undefined" && localStorage.getItem("theme");
