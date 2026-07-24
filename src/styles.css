@@ -34,99 +34,108 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --font-sans:
-    "Inter", "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    "Nunito", ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
+/* Dark navy default (PromptPlum-style) */
 :root {
   --radius: 1.25rem;
 
-  --background: hsl(240 100% 98%);
-  --foreground: hsl(222 47% 11%);
+  --background: hsl(224 60% 8%);
+  --foreground: hsl(210 40% 98%);
 
-  --surface: hsl(0 0% 100%);
-  --surface-soft: hsl(240 40% 98%);
+  --surface: hsl(224 45% 12%);
+  --surface-soft: hsl(224 40% 14%);
 
-  --card: hsl(0 0% 100%);
-  --card-foreground: hsl(222 47% 11%);
-  --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(222 47% 11%);
+  --card: hsl(224 40% 14%);
+  --card-foreground: hsl(210 40% 98%);
+  --popover: hsl(224 40% 14%);
+  --popover-foreground: hsl(210 40% 98%);
 
-  --primary: hsl(221 83% 55%);
+  --primary: hsl(217 91% 60%);
   --primary-foreground: hsl(0 0% 100%);
-  --secondary: hsl(262 83% 58%);
+  --secondary: hsl(280 85% 65%);
   --secondary-foreground: hsl(0 0% 100%);
 
-  --muted: hsl(240 40% 96%);
-  --muted-foreground: hsl(215 16% 47%);
-  --accent: hsl(240 40% 96%);
-  --accent-foreground: hsl(222 47% 11%);
+  --muted: hsl(224 30% 18%);
+  --muted-foreground: hsl(215 20% 65%);
+  --accent: hsl(224 30% 18%);
+  --accent-foreground: hsl(210 40% 98%);
 
   --destructive: hsl(0 72% 51%);
   --destructive-foreground: hsl(0 0% 100%);
 
-  --border: hsl(230 30% 90%);
-  --input: hsl(230 30% 90%);
-  --ring: hsl(221 83% 55%);
+  --border: hsl(224 30% 20%);
+  --input: hsl(224 30% 20%);
+  --ring: hsl(217 91% 60%);
 
-  --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.08);
-  --shadow-lift: 0 20px 50px -12px rgba(59, 89, 152, 0.18);
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --shadow-lift: 0 20px 50px -12px rgba(0, 0, 0, 0.55);
 
   --gradient-bg:
-    radial-gradient(
-      1200px 600px at 10% -10%,
-      hsl(221 90% 92%) 0%,
-      transparent 60%
-    ),
-    radial-gradient(
-      900px 500px at 100% 0%,
-      hsl(262 90% 94%) 0%,
-      transparent 55%
-    ),
-    linear-gradient(180deg, hsl(240 100% 98%), hsl(240 40% 97%));
-  --gradient-primary: linear-gradient(
-    135deg,
-    hsl(221 83% 55%),
-    hsl(262 83% 58%)
-  );
-  --gradient-soft: linear-gradient(
-    135deg,
-    hsl(221 90% 96%),
-    hsl(262 90% 96%)
-  );
+    radial-gradient(1200px 700px at 10% -10%, hsl(240 80% 20% / 0.55) 0%, transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, hsl(280 80% 25% / 0.35) 0%, transparent 55%),
+    linear-gradient(180deg, hsl(224 60% 8%), hsl(224 55% 10%));
+
+  --gradient-primary: linear-gradient(90deg, hsl(217 91% 60%), hsl(280 85% 65%), hsl(330 85% 65%));
+  --gradient-orange: linear-gradient(135deg, hsl(30 100% 60%), hsl(15 95% 55%));
+  --gradient-red: linear-gradient(135deg, hsl(350 85% 60%), hsl(0 80% 55%));
+  --gradient-soft: linear-gradient(135deg, hsl(217 60% 25% / 0.4), hsl(280 60% 30% / 0.4));
+
+  --grid-color: hsl(224 30% 22% / 0.45);
+}
+
+/* Light theme (optional toggle) */
+.light {
+  --background: hsl(230 100% 98%);
+  --foreground: hsl(224 71% 4%);
+  --surface: hsl(0 0% 100%);
+  --surface-soft: hsl(230 40% 96%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(224 71% 4%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(224 71% 4%);
+  --muted: hsl(230 40% 94%);
+  --muted-foreground: hsl(215 16% 47%);
+  --accent: hsl(230 40% 94%);
+  --accent-foreground: hsl(224 71% 4%);
+  --border: hsl(230 30% 88%);
+  --input: hsl(230 30% 88%);
+  --gradient-bg:
+    radial-gradient(1200px 600px at 10% -10%, hsl(217 90% 92%) 0%, transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, hsl(280 90% 94%) 0%, transparent 55%),
+    linear-gradient(180deg, hsl(230 100% 98%), hsl(230 40% 97%));
+  --grid-color: hsl(224 30% 85% / 0.6);
 }
 
 @layer base {
-  * {
-    border-color: var(--color-border);
-  }
-  html,
-  body {
+  * { border-color: var(--color-border); }
+  html, body {
     background: var(--gradient-bg);
     background-attachment: fixed;
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    font-weight: 500;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
-  h1,
-  h2,
-  h3,
-  h4 {
+  h1, h2, h3, h4 {
+    font-weight: 900;
     letter-spacing: -0.02em;
   }
 }
 
 @utility glass-card {
-  background: color-mix(in oklab, white 78%, transparent);
+  background: color-mix(in oklab, var(--surface) 65%, transparent);
   backdrop-filter: saturate(140%) blur(14px);
-  border: 1px solid color-mix(in oklab, hsl(230 30% 88%) 70%, transparent);
+  border: 1px solid color-mix(in oklab, var(--border) 80%, transparent);
   box-shadow: var(--shadow-soft);
 }
 
 @utility glass-strong {
-  background: color-mix(in oklab, white 92%, transparent);
+  background: color-mix(in oklab, var(--surface) 85%, transparent);
   backdrop-filter: saturate(160%) blur(20px);
-  border: 1px solid color-mix(in oklab, hsl(230 30% 85%) 70%, transparent);
+  border: 1px solid color-mix(in oklab, var(--border) 90%, transparent);
   box-shadow: var(--shadow-lift);
 }
 
@@ -137,16 +146,33 @@
   color: transparent;
 }
 
-@utility pill {
-  border-radius: 9999px;
+@utility grid-bg {
+  background-image:
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: -1px -1px;
 }
 
 @utility hover-lift {
-  transition:
-    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
-    box-shadow 0.35s;
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-lift);
-  }
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s;
+  &:hover { transform: translateY(-3px); box-shadow: var(--shadow-lift); }
+}
+
+@utility btn-gradient {
+  background: var(--gradient-primary);
+  color: white;
+  font-weight: 800;
+}
+
+@utility btn-orange {
+  background: var(--gradient-orange);
+  color: white;
+  font-weight: 800;
+}
+
+@utility btn-red {
+  background: var(--gradient-red);
+  color: white;
+  font-weight: 800;
 }

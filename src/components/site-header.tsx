@@ -1,102 +1,76 @@
-import { Link, useRouterState } from "@tanstack/react-router";
-import { Search, Sparkles, User, Menu, X } from "lucide-react";
-import { useState } from "react";
-import { cn } from "@/lib/utils";
-
-const nav = [
-  { to: "/", label: "Home" },
-  { to: "/libraries", label: "Libraries" },
-  { to: "/category/portraits", label: "Explore" },
-  { to: "/premium", label: "Premium" },
-];
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Crown, Smile, Search, Sun, Moon } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export function SiteHeader() {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const [open, setOpen] = useState(false);
+  const [dark, setDark] = useState(true);
+  const [q, setQ] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const saved = typeof window !== "undefined" && localStorage.getItem("theme");
+    if (saved === "light") { document.documentElement.classList.add("light"); setDark(false); }
+  }, []);
+
+  function toggleTheme() {
+    const html = document.documentElement;
+    if (html.classList.contains("light")) {
+      html.classList.remove("light");
+      localStorage.setItem("theme", "dark");
+      setDark(true);
+    } else {
+      html.classList.add("light");
+      localStorage.setItem("theme", "light");
+      setDark(false);
+    }
+  }
+
+  function submitSearch(e: React.FormEvent) {
+    e.preventDefault();
+    if (!q.trim()) return;
+    navigate({ to: "/", search: { q } as never });
+    setShowSearch(false);
+  }
 
   return (
-    <header className="sticky top-4 z-50 mx-auto w-full max-w-6xl px-4">
-      <div className="glass-strong flex items-center gap-3 rounded-full px-3 py-2 sm:px-4">
-        <Link to="/" className="flex items-center gap-2 pl-2">
-          <span className="grid h-8 w-8 place-items-center rounded-full bg-[image:var(--gradient-primary)] text-white shadow-md">
-            <Sparkles className="h-4 w-4" />
+    <header className="sticky top-3 z-50 mx-auto w-full max-w-5xl px-3 sm:top-4 sm:px-4">
+      <div className="glass-strong flex items-center gap-2 rounded-full px-2.5 py-2 sm:px-3">
+        <Link to="/" className="flex items-center gap-2 pl-1">
+          <span className="grid h-10 w-10 place-items-center rounded-full bg-white text-transparent shadow-md" aria-label="PromptPalette">
+            <span className="bg-[image:var(--gradient-primary)] bg-clip-text text-lg font-black">P</span>
           </span>
-          <span className="text-sm font-bold tracking-tight sm:text-base">
-            Prism<span className="gradient-text">Prompts</span>
-          </span>
+          <span className="hidden text-sm font-black tracking-tight sm:inline">Prompt<span className="gradient-text">Palette</span></span>
         </Link>
 
-        <nav className="mx-auto hidden items-center gap-1 md:flex">
-          {nav.map((n) => {
-            const active =
-              n.to === "/" ? pathname === "/" : pathname.startsWith(n.to);
-            return (
-              <Link
-                key={n.to}
-                to={n.to}
-                className={cn(
-                  "rounded-full px-3.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground",
-                  active && "bg-white/70 text-foreground shadow-sm"
-                )}
-              >
-                {n.label}
-              </Link>
-            );
-          })}
-        </nav>
-
         <div className="ml-auto flex items-center gap-1.5">
-          <button
-            aria-label="Search"
-            className="grid h-9 w-9 place-items-center rounded-full text-muted-foreground transition hover:bg-white/70 hover:text-foreground"
-          >
+          <Link to="/premium" aria-label="Premium" className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-foreground transition hover:bg-white/10">
+            <Crown className="h-4 w-4" />
+          </Link>
+          <Link to="/libraries" aria-label="Categories" className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-foreground transition hover:bg-white/10">
+            <Smile className="h-4 w-4" />
+          </Link>
+          <button aria-label="Search" onClick={() => setShowSearch((v) => !v)} className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-foreground transition hover:bg-white/10">
             <Search className="h-4 w-4" />
           </button>
-          <button
-            aria-label="Profile"
-            className="hidden h-9 w-9 place-items-center rounded-full text-muted-foreground transition hover:bg-white/70 hover:text-foreground sm:grid"
-          >
-            <User className="h-4 w-4" />
-          </button>
-          <Link
-            to="/premium"
-            className="hidden items-center gap-1.5 rounded-full bg-[image:var(--gradient-primary)] px-4 py-2 text-sm font-semibold text-white shadow-md transition hover:shadow-lg sm:inline-flex"
-          >
-            <Sparkles className="h-3.5 w-3.5" />
-            Premium
-          </Link>
-          <button
-            className="grid h-9 w-9 place-items-center rounded-full text-muted-foreground md:hidden"
-            onClick={() => setOpen((v) => !v)}
-            aria-label="Menu"
-          >
-            {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          <button aria-label="Toggle theme" onClick={toggleTheme} className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 text-foreground transition hover:bg-white/10">
+            {dark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
           </button>
         </div>
       </div>
 
-      {open && (
-        <div className="glass-strong mt-2 rounded-3xl p-3 md:hidden">
-          <div className="flex flex-col gap-1">
-            {nav.map((n) => (
-              <Link
-                key={n.to}
-                to={n.to}
-                onClick={() => setOpen(false)}
-                className="rounded-2xl px-3 py-2 text-sm font-medium hover:bg-white/60"
-              >
-                {n.label}
-              </Link>
-            ))}
-            <Link
-              to="/premium"
-              onClick={() => setOpen(false)}
-              className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-full bg-[image:var(--gradient-primary)] px-4 py-2 text-sm font-semibold text-white"
-            >
-              <Sparkles className="h-3.5 w-3.5" /> Get Premium
-            </Link>
-          </div>
-        </div>
+      {showSearch && (
+        <form onSubmit={submitSearch} className="glass-strong mt-2 flex items-center gap-2 rounded-full px-4 py-2">
+          <Search className="h-4 w-4 text-muted-foreground" />
+          <input
+            autoFocus
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search prompts…"
+            className="flex-1 bg-transparent py-1.5 text-sm outline-none placeholder:text-muted-foreground"
+          />
+          <button type="submit" className="btn-gradient rounded-full px-4 py-1.5 text-xs">Go</button>
+        </form>
       )}
     </header>
   );
