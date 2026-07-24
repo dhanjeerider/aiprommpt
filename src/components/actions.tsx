@@ -18,12 +18,12 @@ export function CopyButton({ text, className }: { text: string; className?: stri
         }
       }}
       className={cn(
-        "inline-flex items-center gap-2 rounded-full bg-[image:var(--gradient-primary)] px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:shadow-lg",
+        "btn-orange inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm shadow-lg transition hover:opacity-95",
         className
       )}
     >
       {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-      {copied ? "Copied" : "Copy prompt"}
+      {copied ? "Copied" : "Copy"}
     </button>
   );
 }
@@ -38,12 +38,11 @@ export function LikeButton({ initial = 0 }: { initial?: number }) {
         setCount((c) => c + (liked ? -1 : 1));
       }}
       className={cn(
-        "inline-flex items-center gap-2 rounded-full border bg-white/70 px-4 py-2.5 text-sm font-medium transition hover:bg-white",
-        liked && "border-rose-200 bg-rose-50 text-rose-600"
+        "btn-red inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm shadow-lg transition hover:opacity-95"
       )}
     >
       <Heart className={cn("h-4 w-4", liked && "fill-current")} />
-      {count}
+      {liked ? "Liked" : "Like"} {count}
     </button>
   );
 }
@@ -57,8 +56,8 @@ export function SaveButton() {
         toast.success(saved ? "Removed from saved" : "Saved to your collection");
       }}
       className={cn(
-        "inline-flex items-center gap-2 rounded-full border bg-white/70 px-4 py-2.5 text-sm font-medium transition hover:bg-white",
-        saved && "border-indigo-200 bg-indigo-50 text-indigo-600"
+        "inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-bold transition hover:bg-white/10",
+        saved && "border-primary/40 bg-primary/10 text-primary"
       )}
     >
       <Bookmark className={cn("h-4 w-4", saved && "fill-current")} />
