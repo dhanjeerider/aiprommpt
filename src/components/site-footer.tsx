@@ -11,17 +11,16 @@ export function SiteFooter() {
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
             <div className="flex items-center gap-2">
-              <span className="grid h-9 w-9 place-items-center rounded-full bg-[image:var(--gradient-primary)] text-white">
-                <Sparkles className="h-4 w-4" />
-              </span>
-              <span className="text-lg font-bold">
-                Prompt<span className="gradient-text">Palette</span>
-              </span>
+              {settings.logo_url ? (
+                <img src={settings.logo_url} alt={settings.site_title} className="h-9 w-9 rounded-full object-cover" />
+              ) : (
+                <span className="grid h-9 w-9 place-items-center rounded-full bg-[image:var(--gradient-primary)] text-white">
+                  <Sparkles className="h-4 w-4" />
+                </span>
+              )}
+              <span className="text-lg font-bold">{settings.site_title}</span>
             </div>
-            <p className="mt-4 max-w-sm text-sm text-muted-foreground">
-              A curated library of tested AI photo editing prompts for Gemini, ChatGPT and more.
-              Browse, copy, and create with confidence.
-            </p>
+            <p className="mt-4 max-w-sm text-sm text-muted-foreground">{settings.site_tagline}</p>
             <div className="mt-5 flex gap-2">
               {[Twitter, Instagram, Github].map((Icon, i) => (
                 <a
