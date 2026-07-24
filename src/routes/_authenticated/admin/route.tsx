@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, FileText, BookMarked, FileCode, Settings, LogOut, IndianRupee } from "lucide-react";
+import { LayoutDashboard, FileText, BookMarked, FileCode, Settings, LogOut, IndianRupee, Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -43,6 +43,7 @@ function AdminShell() {
     { to: "/admin/libraries", label: "Libraries", icon: BookMarked },
     { to: "/admin/pages", label: "Pages", icon: FileCode },
     { to: "/admin/orders", label: "Orders", icon: IndianRupee },
+    { to: "/admin/import", label: "Import", icon: Download },
     { to: "/admin/settings", label: "Settings", icon: Settings },
   ];
 

@@ -95,7 +95,7 @@ function HomePage() {
       </section>
 
       {/* Tabs */}
-      <section className="mt-10">
+      <section className="mt-10" style={{ fontFamily: '"DM Sans", ui-sans-serif, system-ui, sans-serif' }}>
         <div className="glass-card mx-auto flex max-w-md items-center justify-around rounded-full p-1.5">
           {([
             { k: "latest", label: "Latest", icon: Clock },
@@ -105,7 +105,7 @@ function HomePage() {
             <button
               key={k}
               onClick={() => setTab(k)}
-              className={`inline-flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-black transition ${
+              className={`inline-flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-extrabold tracking-tight transition ${
                 tab === k ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -114,8 +114,8 @@ function HomePage() {
           ))}
         </div>
 
-        {/* Grid with ad slots interleaved every 6 cards */}
-        <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {/* Grid — mobile 1-col Apple-style, denser on larger */}
+        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {grid.map((p, i) => (
             <div key={p.slug} className="contents">
               <PromptCard p={p} index={i} />
