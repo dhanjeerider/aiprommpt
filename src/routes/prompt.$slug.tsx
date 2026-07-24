@@ -151,20 +151,8 @@ function PromptPage() {
             </div>
           )}
 
-          <div className="glass-card mt-6 rounded-3xl p-5">
-            <h3 className="text-sm font-semibold">Rate this prompt</h3>
-            <div className="mt-3 flex items-center gap-1">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <Star
-                  key={n}
-                  className={`h-6 w-6 ${n <= Math.round(p.rating) ? "fill-current text-amber-500" : "text-muted-foreground"}`}
-                />
-              ))}
-              <span className="ml-2 text-sm text-muted-foreground">
-                {p.rating.toFixed(1)} average
-              </span>
-            </div>
-          </div>
+          <RatingBox slug={p.slug} initial={p.rating} />
+
         </div>
       </div>
 
