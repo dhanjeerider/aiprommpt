@@ -17,8 +17,8 @@ export const Route = createFileRoute("/")({
         content:
           "Discover, copy, and remix tested prompts for Midjourney, DALL·E, Flux, and Stable Diffusion. Editorial-grade prompt library with a premium feel.",
       },
-      { property: "og:title", content: "PrismPrompts — Curated AI Prompt Library" },
-      { property: "og:description", content: "Browse tested prompts for major AI image tools." },
+      { property: "og:title", content: "PrismPrompts — A Curated Library of AI Image Prompts" },
+      { property: "og:description", content: "Discover, copy, and remix tested prompts for Midjourney, DALL·E, Flux, and Stable Diffusion. Editorial-grade prompt library with a premium feel." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/" },
       { name: "twitter:card", content: "summary_large_image" },
