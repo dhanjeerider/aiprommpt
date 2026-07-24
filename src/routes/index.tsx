@@ -1,11 +1,11 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { motion } from "motion/react";
 import { Search, Clock, Flame, Sparkles, ArrowRight } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { PromptCard } from "@/components/prompt-card";
 import { AdSlot } from "@/components/ad-slot";
-import { prompts, libraries } from "@/lib/data";
+import { usePosts } from "@/lib/posts";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -28,21 +28,36 @@ type Tab = "latest" | "trending" | "popular";
 function HomePage() {
   const [tab, setTab] = useState<Tab>("latest");
   const [q, setQ] = useState("");
-  const nav = useNavigate();
+  const posts = usePosts();
 
   const popular = ["Men", "Woman", "Couple", "Family", "Birthday"];
 
   const grid = useMemo(() => {
-    let list = [...prompts];
+    if (!posts) return [];
+    let list = [...posts];
     if (tab === "latest") list.sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
     if (tab === "trending") list.sort((a, b) => b.copies - a.copies);
     if (tab === "popular") list.sort((a, b) => b.likes - a.likes);
     if (q.trim()) {
       const s = q.toLowerCase();
-      list = list.filter(p => p.title.toLowerCase().includes(s) || p.tags.some(t => t.includes(s)));
+      list = list.filter(p => p.title.toLowerCase().includes(s) || (p.tags ?? []).some(t => t.toLowerCase().includes(s)));
     }
     return list;
-  }, [tab, q]);
+  }, [posts, tab, q]);
+
+  // Categories derived from posts
+  const categoryChips = useMemo(() => {
+    if (!posts) return [];
+    const counts = new Map<string, number>();
+    posts.forEach((p) => {
+      if (!p.category) return;
+      counts.set(p.category, (counts.get(p.category) ?? 0) + 1);
+    });
+    return [...counts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 12)
+      .map(([slug, count]) => ({ slug, count }));
+  }, [posts]);
 
   return (
     <PageShell>
@@ -114,45 +129,57 @@ function HomePage() {
           ))}
         </div>
 
-        {/* Grid — mobile 1-col Apple-style, denser on larger */}
         <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {grid.map((p, i) => (
-            <div key={p.slug} className="contents">
-              <PromptCard p={p} index={i} />
-              {(i + 1) % 6 === 0 && <AdSlot />}
+          {posts === null ? (
+            Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="aspect-[4/5] animate-pulse rounded-3xl bg-white/5" />
+            ))
+          ) : grid.length === 0 ? (
+            <div className="col-span-full glass-card rounded-3xl p-10 text-center">
+              <h3 className="text-lg font-bold">No prompts yet</h3>
+              <p className="mt-2 text-sm text-muted-foreground">Sign in to the admin and add your first post — or run the sitemap importer.</p>
             </div>
-          ))}
+          ) : (
+            grid.map((p, i) => (
+              <div key={p.slug} className="contents">
+                <PromptCard p={p} index={i} />
+                {(i + 1) % 6 === 0 && <AdSlot />}
+              </div>
+            ))
+          )}
         </div>
       </section>
 
-      {/* Browse by Style */}
-      <section className="mt-20">
-        <h2 className="text-center text-3xl">Browse by Style</h2>
-        <p className="mt-2 text-center text-sm text-muted-foreground">Find the perfect aesthetic for your next project.</p>
-        <div className="mt-8 grid grid-cols-3 gap-3 sm:grid-cols-3 md:grid-cols-4">
-          {libraries.map((l) => (
-            <Link
-              key={l.slug}
-              to="/category/$slug"
-              params={{ slug: l.categories[0] ?? "portraits" }}
-              className="glass-card hover-lift flex items-center gap-3 rounded-2xl p-3"
-            >
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[image:var(--gradient-primary)] text-lg font-black text-white">
-                {l.title[0]}
-              </span>
-              <div className="min-w-0">
-                <div className="truncate text-sm font-black">{l.title}</div>
-                <div className="text-[11px] text-muted-foreground">{l.promptCount} Prompts</div>
-              </div>
+      {/* Browse by Category — 2 col on mobile */}
+      {categoryChips.length > 0 && (
+        <section className="mt-20">
+          <h2 className="text-center text-3xl">Browse by Category</h2>
+          <p className="mt-2 text-center text-sm text-muted-foreground">Find the perfect look for your next project.</p>
+          <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+            {categoryChips.map((c) => (
+              <Link
+                key={c.slug}
+                to="/category/$slug"
+                params={{ slug: c.slug }}
+                className="glass-card hover-lift flex items-center gap-3 rounded-2xl p-3"
+              >
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[image:var(--gradient-primary)] text-lg font-black text-white">
+                  {c.slug[0]?.toUpperCase() ?? "•"}
+                </span>
+                <div className="min-w-0">
+                  <div className="truncate text-sm font-black capitalize">{c.slug.replace(/-/g, " ")}</div>
+                  <div className="text-[11px] text-muted-foreground">{c.count} Prompt{c.count === 1 ? "" : "s"}</div>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <div className="mt-6 text-center">
+            <Link to="/libraries" className="btn-gradient inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm shadow-lg">
+              View All <ArrowRight className="h-4 w-4" />
             </Link>
-          ))}
-        </div>
-        <div className="mt-6 text-center">
-          <Link to="/libraries" className="btn-gradient inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm shadow-lg">
-            View All Libraries <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
     </PageShell>
   );
 }
