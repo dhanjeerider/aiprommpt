@@ -37,14 +37,14 @@ function AdminShell() {
     </div>
   );
 
-  const items = [
+  const items: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }[] = [
     { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
     { to: "/admin/posts", label: "Posts", icon: FileText },
     { to: "/admin/libraries", label: "Libraries", icon: BookMarked },
     { to: "/admin/pages", label: "Pages", icon: FileCode },
     { to: "/admin/orders", label: "Orders", icon: IndianRupee },
     { to: "/admin/settings", label: "Settings", icon: Settings },
-  ] as const;
+  ];
 
   return (
     <div className="min-h-screen">
@@ -55,7 +55,7 @@ function AdminShell() {
           </Link>
           <nav className="flex flex-col gap-1">
             {items.map(i => (
-              <Link key={i.to} to={i.to} activeOptions={{ exact: i.exact ?? false }}
+              <Link key={i.to} to={i.to as any} activeOptions={{ exact: i.exact ?? false }}
                 activeProps={{ className: "bg-primary/15 text-primary" }}
                 className="flex items-center gap-2 rounded-2xl px-3 py-2 text-sm font-bold text-muted-foreground hover:bg-white/5 hover:text-foreground">
                 <i.icon className="h-4 w-4" /> {i.label}

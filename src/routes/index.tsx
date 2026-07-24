@@ -133,8 +133,8 @@ function HomePage() {
           {libraries.map((l) => (
             <Link
               key={l.slug}
-              to="/library/$slug"
-              params={{ slug: l.slug }}
+              to="/category/$slug"
+              params={{ slug: l.categories[0] ?? "portraits" }}
               className="glass-card hover-lift flex items-center gap-3 rounded-2xl p-3"
             >
               <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[image:var(--gradient-primary)] text-lg font-black text-white">
