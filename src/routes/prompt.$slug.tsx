@@ -120,15 +120,18 @@ function PromptPage() {
             <LikeButton initial={p.likes} />
           </div>
 
-          <div className="glass-card mt-6 rounded-3xl p-5">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold">Prompt</h3>
-              <CopyButton text={p.content} className="px-3 py-1.5 text-xs" />
+          {[p.content, ...((p as any).extraPrompts ?? [])].filter((t: string) => t && t.trim()).map((text: string, i: number) => (
+            <div key={i} className="glass-card mt-6 rounded-3xl p-5">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-sm font-semibold">Prompt{i > 0 ? ` ${i + 1}` : ""}</h3>
+                <CopyButton text={text} className="px-3 py-1.5 text-xs" />
+              </div>
+              <pre className="mt-3 max-h-[600px] overflow-auto whitespace-pre-wrap break-words rounded-2xl border border-white/10 bg-black/30 p-4 font-mono text-[13px] leading-relaxed text-foreground">
+{text}
+              </pre>
             </div>
-            <pre className="mt-3 whitespace-pre-wrap rounded-2xl border border-white/10 bg-black/30 p-4 font-mono text-[13px] leading-relaxed text-foreground">
-              {p.content}
-            </pre>
-          </div>
+          ))}
+
 
           {(p.tags ?? []).length > 0 && (
             <div className="mt-6">
