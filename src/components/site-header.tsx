@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Crown, Smile, Search, Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useSettings } from "@/lib/settings";
 
 export function SiteHeader() {
   const [dark, setDark] = useState(true);
