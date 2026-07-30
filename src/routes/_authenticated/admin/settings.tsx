@@ -94,8 +94,13 @@ function SettingsAdmin() {
     ["upi_id", "UPI ID"],
     ["premium_price", "Premium price"],
     ["premium_currency", "Currency"],
+    ["premium_note", "Premium checkout note", "textarea"],
     ["analytics_gtag", "Google Analytics tag"],
   ];
+
+  const links = s.footer_links ?? [];
+  const setLinks = (v: Settings["footer_links"]) => set("footer_links", v);
+
 
   return (
     <div>
