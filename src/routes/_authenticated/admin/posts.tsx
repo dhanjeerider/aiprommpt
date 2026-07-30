@@ -9,16 +9,18 @@ export const Route = createFileRoute("/_authenticated/admin/posts")({ component:
 type Post = {
   id: string; slug: string; title: string; excerpt: string; content_prompt: string;
   extra_prompts: string[];
+  prompt_images: string[];
   featured_image: string; category: string | null; library_slug: string | null;
   tags: string[]; tool: string | null; author_name: string; premium: boolean;
   likes: number; published: boolean;
 };
 
 const empty: Omit<Post, "id"> = {
-  slug: "", title: "", excerpt: "", content_prompt: "", extra_prompts: [], featured_image: "",
+  slug: "", title: "", excerpt: "", content_prompt: "", extra_prompts: [], prompt_images: [], featured_image: "",
   category: "", library_slug: "", tags: [], tool: "gemini", author_name: "PromptPalette",
   premium: false, likes: 0, published: true,
 };
+
 
 function PostsAdmin() {
   const [rows, setRows] = useState<Post[]>([]);
@@ -59,8 +61,20 @@ function PostsAdmin() {
 
   async function onUpload(file: File) {
     const url = await uploadImage(file);
-    if (url && editing) setEditing({ ...editing, featured_image: url });
+    if (!url) return toast.error("Upload failed");
+    if (editing) setEditing({ ...editing, featured_image: url });
   }
+
+  async function onPromptImage(file: File, i: number) {
+    if (!editing) return;
+    const url = await uploadImage(file);
+    if (!url) return toast.error("Upload failed");
+    const next = [...(editing.prompt_images ?? [])];
+    while (next.length <= i) next.push("");
+    next[i] = url;
+    setEditing({ ...editing, prompt_images: next });
+  }
+
 
   if (editing) return (
     <div>
@@ -95,15 +109,30 @@ function PostsAdmin() {
               <div key={i} className="rounded-xl border border-white/10 bg-black/20 p-3">
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-[11px] font-bold uppercase text-muted-foreground">Prompt {i + 2}</span>
-                  <button type="button" onClick={() => setEditing({ ...editing, extra_prompts: editing.extra_prompts.filter((_, j) => j !== i) })}
+                  <button type="button" onClick={() => setEditing({
+                    ...editing,
+                    extra_prompts: editing.extra_prompts.filter((_, j) => j !== i),
+                    prompt_images: (editing.prompt_images ?? []).filter((_, j) => j !== i),
+                  })}
                     className="text-xs text-red-400 hover:underline">Remove</button>
                 </div>
-                <textarea rows={8} value={val} onChange={e => {
-                  const next = [...editing.extra_prompts]; next[i] = e.target.value;
-                  setEditing({ ...editing, extra_prompts: next });
-                }} className="w-full rounded-lg border border-white/10 bg-white/5 p-2 text-sm font-mono outline-none" />
+                <div className="grid gap-3 sm:grid-cols-[1fr_180px]">
+                  <textarea rows={8} value={val} onChange={e => {
+                    const next = [...editing.extra_prompts]; next[i] = e.target.value;
+                    setEditing({ ...editing, extra_prompts: next });
+                  }} className="w-full rounded-lg border border-white/10 bg-white/5 p-2 text-sm font-mono outline-none" />
+                  <div className="rounded-lg border border-dashed border-white/15 p-2">
+                    <div className="text-[10px] font-bold uppercase text-muted-foreground">Demo image for prompt {i + 2}</div>
+                    <input type="file" accept="image/*" onChange={e => e.target.files?.[0] && onPromptImage(e.target.files[0], i)}
+                      className="mt-1 w-full text-[11px]" />
+                    {(editing.prompt_images ?? [])[i] && (
+                      <img src={(editing.prompt_images ?? [])[i]} alt="" className="mt-2 h-24 w-full rounded-lg object-cover" />
+                    )}
+                  </div>
+                </div>
               </div>
             ))}
+
             {(editing.extra_prompts ?? []).length === 0 && (
               <div className="text-xs text-muted-foreground">Only the main prompt above. Click "+ Add prompt" to include more.</div>
             )}

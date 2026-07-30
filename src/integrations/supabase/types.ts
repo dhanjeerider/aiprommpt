@@ -162,6 +162,7 @@ export type Database = {
           library_slug: string | null
           likes: number
           premium: boolean
+          prompt_images: string[]
           published: boolean
           rating: number
           saves: number
@@ -186,6 +187,7 @@ export type Database = {
           library_slug?: string | null
           likes?: number
           premium?: boolean
+          prompt_images?: string[]
           published?: boolean
           rating?: number
           saves?: number
@@ -210,6 +212,7 @@ export type Database = {
           library_slug?: string | null
           likes?: number
           premium?: boolean
+          prompt_images?: string[]
           published?: boolean
           rating?: number
           saves?: number
@@ -269,6 +272,7 @@ export type Database = {
           adsense_client: string | null
           analytics_gtag: string | null
           favicon_url: string | null
+          footer_links: Json
           hero_gradient_text: string
           hero_subtitle: string
           hero_title: string
@@ -276,6 +280,7 @@ export type Database = {
           logo_url: string | null
           popular_tags: string[]
           premium_currency: string | null
+          premium_note: string | null
           premium_price: string | null
           site_tagline: string
           site_title: string
@@ -290,6 +295,7 @@ export type Database = {
           adsense_client?: string | null
           analytics_gtag?: string | null
           favicon_url?: string | null
+          footer_links?: Json
           hero_gradient_text?: string
           hero_subtitle?: string
           hero_title?: string
@@ -297,6 +303,7 @@ export type Database = {
           logo_url?: string | null
           popular_tags?: string[]
           premium_currency?: string | null
+          premium_note?: string | null
           premium_price?: string | null
           site_tagline?: string
           site_title?: string
@@ -311,6 +318,7 @@ export type Database = {
           adsense_client?: string | null
           analytics_gtag?: string | null
           favicon_url?: string | null
+          footer_links?: Json
           hero_gradient_text?: string
           hero_subtitle?: string
           hero_title?: string
@@ -318,6 +326,7 @@ export type Database = {
           logo_url?: string | null
           popular_tags?: string[]
           premium_currency?: string | null
+          premium_note?: string | null
           premium_price?: string | null
           site_tagline?: string
           site_title?: string

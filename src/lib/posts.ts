@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { PromptPost } from "./data";
+import { cleanTags } from "./tags";
 
 export type PostRow = {
   id: string;
@@ -11,6 +12,7 @@ export type PostRow = {
   extra_prompts: string[] | null;
   featured_image: string | null;
   extra_images: string[] | null;
+  prompt_images: string[] | null;
   category: string | null;
   library_slug: string | null;
   tags: string[] | null;
@@ -27,6 +29,8 @@ export type PostRow = {
   updated_at: string;
 };
 
+export type AppPost = PromptPost & { extraPrompts: string[]; promptImages: string[] };
+
 function initials(name: string) {
   return name
     .split(/\s+/)
@@ -37,7 +41,7 @@ function initials(name: string) {
     .toUpperCase();
 }
 
-export function rowToPost(r: PostRow): PromptPost & { extraPrompts: string[] } {
+export function rowToPost(r: PostRow): AppPost {
   const authorName = r.author_name ?? "PromptPalette";
   return {
     slug: r.slug,
@@ -45,9 +49,10 @@ export function rowToPost(r: PostRow): PromptPost & { extraPrompts: string[] } {
     excerpt: r.excerpt ?? "",
     content: r.content_prompt ?? "",
     extraPrompts: (r.extra_prompts ?? []).filter(Boolean),
+    promptImages: (r.prompt_images ?? []).map((x) => x ?? ""),
     featuredImage: r.featured_image ?? "",
     category: r.category ?? "",
-    tags: r.tags ?? [],
+    tags: cleanTags(r.tags),
     tool: r.tool ?? "",
     style: r.style ?? "",
     author: {
@@ -68,7 +73,7 @@ export function rowToPost(r: PostRow): PromptPost & { extraPrompts: string[] } {
 
 
 export function usePosts() {
-  const [posts, setPosts] = useState<PromptPost[] | null>(null);
+  const [posts, setPosts] = useState<AppPost[] | null>(null);
   useEffect(() => {
     let alive = true;
     supabase
@@ -88,7 +93,7 @@ export function usePosts() {
 }
 
 export function usePostBySlug(slug: string) {
-  const [state, setState] = useState<{ post: PromptPost | null; loading: boolean }>({
+  const [state, setState] = useState<{ post: AppPost | null; loading: boolean }>({
     post: null,
     loading: true,
   });

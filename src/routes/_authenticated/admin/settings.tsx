@@ -25,7 +25,10 @@ type Settings = {
   premium_price: string | null;
   premium_currency: string | null;
   analytics_gtag: string | null;
+  premium_note: string | null;
+  footer_links: { label: string; href: string; group?: string }[] | null;
 };
+
 
 function SettingsAdmin() {
   const [s, setS] = useState<Settings | null>(null);
@@ -91,8 +94,13 @@ function SettingsAdmin() {
     ["upi_id", "UPI ID"],
     ["premium_price", "Premium price"],
     ["premium_currency", "Currency"],
+    ["premium_note", "Premium checkout note", "textarea"],
     ["analytics_gtag", "Google Analytics tag"],
   ];
+
+  const links = s.footer_links ?? [];
+  const setLinks = (v: Settings["footer_links"]) => set("footer_links", v);
+
 
   return (
     <div>
@@ -147,7 +155,30 @@ function SettingsAdmin() {
           <input type="file" accept="image/*" onChange={e => e.target.files && upl("upi_qr_url", e.target.files[0])} className="mt-1 block w-full text-sm" />
           {s.upi_qr_url && <img src={s.upi_qr_url} alt="" className="mt-2 h-40" />}
         </label>
+
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-4 md:col-span-2">
+          <div className="flex items-center justify-between">
+            <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Footer menu (manual)</div>
+            <button type="button" onClick={() => setLinks([...links, { label: "", href: "/", group: "Explore" }])}
+              className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs">+ Add link</button>
+          </div>
+          <div className="mt-3 space-y-2">
+            {links.map((l, i) => (
+              <div key={i} className="grid gap-2 sm:grid-cols-[1fr_1fr_140px_auto]">
+                <input value={l.label} placeholder="Label" onChange={e => { const n = [...links]; n[i] = { ...l, label: e.target.value }; setLinks(n); }}
+                  className="rounded-xl border border-white/10 bg-white/5 p-2 text-sm outline-none" />
+                <input value={l.href} placeholder="/about" onChange={e => { const n = [...links]; n[i] = { ...l, href: e.target.value }; setLinks(n); }}
+                  className="rounded-xl border border-white/10 bg-white/5 p-2 text-sm outline-none" />
+                <input value={l.group ?? ""} placeholder="Column" onChange={e => { const n = [...links]; n[i] = { ...l, group: e.target.value }; setLinks(n); }}
+                  className="rounded-xl border border-white/10 bg-white/5 p-2 text-sm outline-none" />
+                <button type="button" onClick={() => setLinks(links.filter((_, j) => j !== i))} className="text-xs text-red-400 hover:underline">Remove</button>
+              </div>
+            ))}
+            {links.length === 0 && <div className="text-xs normal-case text-muted-foreground">No custom links — the default footer menu is shown. Add links to override it.</div>}
+          </div>
+        </div>
       </div>
+
 
       <p className="mt-6 text-xs text-muted-foreground">
         Tip: After saving, the site reads live settings — refresh any open tab to see the new logo, title, hero text, and popular tags.

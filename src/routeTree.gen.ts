@@ -15,6 +15,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PremiumRouteImport } from './routes/premium'
 import { Route as LibrariesRouteImport } from './routes/libraries'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AiPolicyRouteImport } from './routes/ai-policy'
 import { Route as AboutRouteImport } from './routes/about'
@@ -24,6 +25,7 @@ import { Route as ToolSlugRouteImport } from './routes/tool.$slug'
 import { Route as TagSlugRouteImport } from './routes/tag.$slug'
 import { Route as StyleSlugRouteImport } from './routes/style.$slug'
 import { Route as PromptSlugRouteImport } from './routes/prompt.$slug'
+import { Route as PageSlugRouteImport } from './routes/page.$slug'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
@@ -62,6 +64,11 @@ const LibrariesRoute = LibrariesRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -106,6 +113,11 @@ const StyleSlugRoute = StyleSlugRouteImport.update({
 const PromptSlugRoute = PromptSlugRouteImport.update({
   id: '/prompt/$slug',
   path: '/prompt/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PageSlugRoute = PageSlugRouteImport.update({
+  id: '/page/$slug',
+  path: '/page/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CategorySlugRoute = CategorySlugRouteImport.update({
@@ -163,6 +175,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/ai-policy': typeof AiPolicyRoute
   '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/libraries': typeof LibrariesRoute
   '/premium': typeof PremiumRoute
@@ -171,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/category/$slug': typeof CategorySlugRoute
+  '/page/$slug': typeof PageSlugRoute
   '/prompt/$slug': typeof PromptSlugRoute
   '/style/$slug': typeof StyleSlugRoute
   '/tag/$slug': typeof TagSlugRoute
@@ -188,6 +202,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/ai-policy': typeof AiPolicyRoute
   '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/libraries': typeof LibrariesRoute
   '/premium': typeof PremiumRoute
@@ -195,6 +210,7 @@ export interface FileRoutesByTo {
   '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/page/$slug': typeof PageSlugRoute
   '/prompt/$slug': typeof PromptSlugRoute
   '/style/$slug': typeof StyleSlugRoute
   '/tag/$slug': typeof TagSlugRoute
@@ -214,6 +230,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/ai-policy': typeof AiPolicyRoute
   '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/libraries': typeof LibrariesRoute
   '/premium': typeof PremiumRoute
@@ -222,6 +239,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/category/$slug': typeof CategorySlugRoute
+  '/page/$slug': typeof PageSlugRoute
   '/prompt/$slug': typeof PromptSlugRoute
   '/style/$slug': typeof StyleSlugRoute
   '/tag/$slug': typeof TagSlugRoute
@@ -241,6 +259,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/ai-policy'
     | '/auth'
+    | '/checkout'
     | '/contact'
     | '/libraries'
     | '/premium'
@@ -249,6 +268,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/admin'
     | '/category/$slug'
+    | '/page/$slug'
     | '/prompt/$slug'
     | '/style/$slug'
     | '/tag/$slug'
@@ -266,6 +286,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/ai-policy'
     | '/auth'
+    | '/checkout'
     | '/contact'
     | '/libraries'
     | '/premium'
@@ -273,6 +294,7 @@ export interface FileRouteTypes {
     | '/refund'
     | '/terms'
     | '/category/$slug'
+    | '/page/$slug'
     | '/prompt/$slug'
     | '/style/$slug'
     | '/tag/$slug'
@@ -291,6 +313,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/ai-policy'
     | '/auth'
+    | '/checkout'
     | '/contact'
     | '/libraries'
     | '/premium'
@@ -299,6 +322,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authenticated/admin'
     | '/category/$slug'
+    | '/page/$slug'
     | '/prompt/$slug'
     | '/style/$slug'
     | '/tag/$slug'
@@ -318,6 +342,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AiPolicyRoute: typeof AiPolicyRoute
   AuthRoute: typeof AuthRoute
+  CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
   LibrariesRoute: typeof LibrariesRoute
   PremiumRoute: typeof PremiumRoute
@@ -325,6 +350,7 @@ export interface RootRouteChildren {
   RefundRoute: typeof RefundRoute
   TermsRoute: typeof TermsRoute
   CategorySlugRoute: typeof CategorySlugRoute
+  PageSlugRoute: typeof PageSlugRoute
   PromptSlugRoute: typeof PromptSlugRoute
   StyleSlugRoute: typeof StyleSlugRoute
   TagSlugRoute: typeof TagSlugRoute
@@ -373,6 +399,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -436,6 +469,13 @@ declare module '@tanstack/react-router' {
       path: '/prompt/$slug'
       fullPath: '/prompt/$slug'
       preLoaderRoute: typeof PromptSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/page/$slug': {
+      id: '/page/$slug'
+      path: '/page/$slug'
+      fullPath: '/page/$slug'
+      preLoaderRoute: typeof PageSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/category/$slug': {
@@ -547,6 +587,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AiPolicyRoute: AiPolicyRoute,
   AuthRoute: AuthRoute,
+  CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
   LibrariesRoute: LibrariesRoute,
   PremiumRoute: PremiumRoute,
@@ -554,6 +595,7 @@ const rootRouteChildren: RootRouteChildren = {
   RefundRoute: RefundRoute,
   TermsRoute: TermsRoute,
   CategorySlugRoute: CategorySlugRoute,
+  PageSlugRoute: PageSlugRoute,
   PromptSlugRoute: PromptSlugRoute,
   StyleSlugRoute: StyleSlugRoute,
   TagSlugRoute: TagSlugRoute,

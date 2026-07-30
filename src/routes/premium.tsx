@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import { Check, X, Sparkles, ShieldCheck } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
+import { useSettings } from "@/lib/settings";
 import {
   Accordion,
   AccordionContent,
@@ -13,13 +14,13 @@ export const Route = createFileRoute("/premium")({
   component: PremiumPage,
   head: () => ({
     meta: [
-      { title: "Premium — Lifetime Access to PrismPrompts" },
+      { title: "Premium — Lifetime Access to the Prompt Library" },
       {
         name: "description",
         content:
           "Pay once, own it forever. Unlock the premium library, browse ad-free, and get every future release included.",
       },
-      { property: "og:title", content: "PrismPrompts Premium" },
+      { property: "og:title", content: "Premium — Lifetime Access" },
       { property: "og:description", content: "One-time purchase. Lifetime access." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/premium" },
@@ -30,6 +31,10 @@ export const Route = createFileRoute("/premium")({
 });
 
 function PremiumPage() {
+  const s = useSettings();
+  const price = s.premium_price ?? "499";
+  const symbol = (s.premium_currency ?? "INR") === "INR" ? "₹" : "";
+
   const freeFeatures = [
     { label: "Browse the public prompt library", ok: true },
     { label: "Copy free prompts to clipboard", ok: true },
@@ -52,15 +57,15 @@ function PremiumPage() {
       <section className="relative overflow-hidden rounded-[32px]">
         <div className="glass-strong relative rounded-[32px] px-6 py-14 text-center sm:px-12 sm:py-20">
           <div
-            className="pointer-events-none absolute inset-x-0 -top-40 mx-auto h-96 w-[36rem] rounded-full opacity-60 blur-3xl"
+            className="pointer-events-none absolute inset-x-0 -top-40 mx-auto h-96 w-[36rem] rounded-full opacity-40 blur-3xl"
             style={{ background: "var(--gradient-primary)" }}
           />
           <div className="relative mx-auto max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full border bg-white/70 px-3 py-1 text-xs font-medium">
-              <Sparkles className="h-3.5 w-3.5 text-[hsl(262_83%_58%)]" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold">
+              <Sparkles className="h-3.5 w-3.5 text-primary" />
               One-time purchase · Lifetime access
             </div>
-            <h1 className="mt-5 text-4xl font-bold tracking-tight sm:text-6xl">
+            <h1 className="mt-5 text-4xl font-extrabold tracking-tight sm:text-6xl">
               Own the library.
               <br />
               <span className="gradient-text">Forever.</span>
@@ -70,15 +75,15 @@ function PremiumPage() {
               prompt today — and every one we release from now on.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <a
-                href="#pricing"
-                className="inline-flex items-center gap-2 rounded-full bg-[image:var(--gradient-primary)] px-6 py-3 text-sm font-semibold text-white shadow-md"
+              <Link
+                to="/checkout"
+                className="btn-gradient inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
               >
                 Get lifetime access
-              </a>
+              </Link>
               <Link
                 to="/libraries"
-                className="inline-flex items-center gap-2 rounded-full border bg-white/70 px-6 py-3 text-sm font-semibold"
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-6 py-3 text-sm font-semibold"
               >
                 Preview the library
               </Link>
@@ -95,14 +100,14 @@ function PremiumPage() {
           className="glass-card rounded-[28px] p-8"
         >
           <h3 className="text-sm font-semibold text-muted-foreground">Free</h3>
-          <div className="mt-1 text-4xl font-bold">$0</div>
+          <div className="mt-1 text-4xl font-extrabold">{symbol}0</div>
           <p className="mt-2 text-sm text-muted-foreground">
             Great for getting started and exploring the free public prompts.
           </p>
           <ul className="mt-6 space-y-3">
             {freeFeatures.map((f) => (
               <li key={f.label} className="flex items-start gap-3 text-sm">
-                <span className={`mt-0.5 grid h-5 w-5 place-items-center rounded-full ${f.ok ? "bg-emerald-100 text-emerald-600" : "bg-muted text-muted-foreground"}`}>
+                <span className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full ${f.ok ? "bg-emerald-500/20 text-emerald-400" : "bg-white/5 text-muted-foreground"}`}>
                   {f.ok ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
                 </span>
                 <span className={f.ok ? "" : "text-muted-foreground line-through"}>
@@ -113,7 +118,7 @@ function PremiumPage() {
           </ul>
           <Link
             to="/libraries"
-            className="mt-8 inline-flex w-full items-center justify-center rounded-full border bg-white/70 px-5 py-3 text-sm font-semibold"
+            className="mt-8 inline-flex w-full items-center justify-center rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold"
           >
             Continue with Free
           </Link>
@@ -127,20 +132,20 @@ function PremiumPage() {
           className="glass-strong relative overflow-hidden rounded-[28px] p-8"
         >
           <div
-            className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full opacity-50 blur-3xl"
+            className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full opacity-30 blur-3xl"
             style={{ background: "var(--gradient-primary)" }}
           />
           <div className="relative">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <h3 className="inline-flex items-center gap-2 text-sm font-semibold">
-                <Sparkles className="h-4 w-4 text-[hsl(262_83%_58%)]" /> Premium — Lifetime
+                <Sparkles className="h-4 w-4 text-primary" /> Premium — Lifetime
               </h3>
               <span className="rounded-full bg-[image:var(--gradient-primary)] px-2.5 py-0.5 text-[11px] font-semibold text-white">
                 Best value
               </span>
             </div>
             <div className="mt-1 flex items-end gap-2">
-              <div className="text-4xl font-bold">$79</div>
+              <div className="text-4xl font-extrabold">{symbol}{price}</div>
               <div className="pb-1 text-sm text-muted-foreground">one-time · forever</div>
             </div>
             <p className="mt-2 text-sm text-muted-foreground">
@@ -149,25 +154,25 @@ function PremiumPage() {
             <ul className="mt-6 space-y-3">
               {premiumFeatures.map((f) => (
                 <li key={f.label} className="flex items-start gap-3 text-sm">
-                  <span className="mt-0.5 grid h-5 w-5 place-items-center rounded-full bg-[image:var(--gradient-primary)] text-white">
+                  <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[image:var(--gradient-primary)] text-white">
                     <Check className="h-3 w-3" />
                   </span>
                   {f.label}
                 </li>
               ))}
             </ul>
-            <button className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[image:var(--gradient-primary)] px-5 py-3 text-sm font-semibold text-white shadow-md">
+            <Link to="/checkout" className="btn-gradient mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold">
               <Sparkles className="h-4 w-4" /> Unlock lifetime access
-            </button>
-            <div className="mt-3 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-              <ShieldCheck className="h-3.5 w-3.5" /> Secure checkout · 14-day money-back guarantee
+            </Link>
+            <div className="mt-3 flex items-center justify-center gap-2 text-center text-xs text-muted-foreground">
+              <ShieldCheck className="h-3.5 w-3.5 shrink-0" /> UPI checkout · manually verified
             </div>
           </div>
         </motion.div>
       </section>
 
       <section className="mt-20">
-        <h2 className="text-center text-3xl font-bold tracking-tight">Frequently asked</h2>
+        <h2 className="text-center text-3xl font-extrabold tracking-tight">Frequently asked</h2>
         <div className="glass-card mx-auto mt-8 max-w-3xl rounded-3xl p-2 sm:p-4">
           <Accordion type="single" collapsible className="w-full">
             {[
@@ -176,12 +181,12 @@ function PremiumPage() {
                 a: "No. Premium is a one-time payment for lifetime access. There are no renewals, no monthly fees, and no auto-billing.",
               },
               {
-                q: "Do I get future premium releases?",
-                a: "Yes. Every premium prompt we publish in the future is included in your one-time purchase.",
+                q: "How do I pay?",
+                a: "Pay via UPI on the checkout page, then submit your UTR number and a payment screenshot. Access is enabled after a quick manual verification.",
               },
               {
-                q: "Which AI tools are the prompts tested with?",
-                a: "Prompts are tuned and tested against major image tools including Midjourney, DALL·E, Flux, Stable Diffusion, and Ideogram.",
+                q: "Do I get future premium releases?",
+                a: "Yes. Every premium prompt we publish in the future is included in your one-time purchase.",
               },
               {
                 q: "Can I use the prompts commercially?",
@@ -189,7 +194,7 @@ function PremiumPage() {
               },
               {
                 q: "Do you offer refunds?",
-                a: "We offer a 14-day money-back guarantee. See our refund policy for details.",
+                a: "Refunds follow the terms in our refund policy. Contact us with your UTR number if something went wrong.",
               },
             ].map((item, i) => (
               <AccordionItem key={i} value={`item-${i}`} className="border-none">

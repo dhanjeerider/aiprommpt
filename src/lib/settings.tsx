@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
+export type FooterLink = { label: string; href: string; group?: string };
+
 export type SiteSettings = {
   site_title: string;
   site_tagline: string;
@@ -18,7 +20,9 @@ export type SiteSettings = {
   upi_qr_url: string | null;
   premium_price: string | null;
   premium_currency: string | null;
+  premium_note: string | null;
   analytics_gtag: string | null;
+  footer_links: FooterLink[];
 };
 
 const defaults: SiteSettings = {
@@ -38,10 +42,19 @@ const defaults: SiteSettings = {
   upi_qr_url: null,
   premium_price: null,
   premium_currency: "INR",
+  premium_note: null,
   analytics_gtag: null,
+  footer_links: [],
 };
 
 const Ctx = createContext<SiteSettings>(defaults);
+
+function normalizeLinks(v: unknown): FooterLink[] {
+  if (!Array.isArray(v)) return [];
+  return v
+    .map((x) => (x && typeof x === "object" ? (x as FooterLink) : null))
+    .filter((x): x is FooterLink => !!x && !!x.label && !!x.href);
+}
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [s, setS] = useState<SiteSettings>(defaults);
@@ -49,7 +62,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     let alive = true;
     supabase.from("site_settings").select("*").eq("id", 1).maybeSingle().then(({ data }) => {
       if (!alive || !data) return;
-      setS({ ...defaults, ...(data as any) });
+      const row = data as Record<string, unknown>;
+      setS({ ...defaults, ...(row as any), footer_links: normalizeLinks(row.footer_links) });
     });
     return () => { alive = false; };
   }, []);
