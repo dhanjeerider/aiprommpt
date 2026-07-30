@@ -125,12 +125,21 @@ function ImportPage() {
     try {
       push(`Fetching sitemap: ${sitemap}`);
       const xml = await fetch(PROXY + encodeURIComponent(sitemap)).then(r => r.text());
-      const urls = Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/g)).map(m => m[1]);
+      const urls = Array.from(new Set(Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/g)).map(m => m[1])));
       push(`Found ${urls.length} URLs`);
 
-      // Load existing slugs
-      const { data: existing } = await supabase.from("posts").select("slug");
-      const have = new Set((existing ?? []).map((r: { slug: string }) => r.slug));
+      // Load ALL existing slugs (paginated) so already-published posts are skipped
+      const have = new Set<string>();
+      for (let from = 0; ; from += 1000) {
+        const { data: page } = await supabase
+          .from("posts")
+          .select("slug")
+          .order("created_at", { ascending: false })
+          .range(from, from + 999);
+        (page ?? []).forEach((r: { slug: string }) => have.add(r.slug));
+        if (!page || page.length < 1000) break;
+      }
+      push(`${have.size} posts already in database — these will be skipped`);
 
       setProgress(p => ({ ...p, total: urls.length }));
 
@@ -145,8 +154,23 @@ function ImportPage() {
           const html = await fetch(PROXY + encodeURIComponent(url)).then(r => r.text());
           const post = extractPost(url, html);
           if (!post.title || !post.featured_image) throw new Error("missing fields");
+          // final duplicate guard right before insert
+          const { data: dupe } = await supabase.from("posts").select("id").eq("slug", post.slug).maybeSingle();
+          if (dupe) {
+            have.add(post.slug);
+            push(`= ${post.slug} — already exists, skipped`);
+            setProgress(p => ({ ...p, done: p.done + 1, skipped: p.skipped + 1 }));
+            continue;
+          }
           const { error } = await supabase.from("posts").insert(post);
-          if (error) throw error;
+          if (error) {
+            if ((error as { code?: string }).code === "23505") {
+              have.add(post.slug);
+              setProgress(p => ({ ...p, done: p.done + 1, skipped: p.skipped + 1 }));
+              continue;
+            }
+            throw error;
+          }
           have.add(slug);
           push(`✓ ${post.title}`);
           setProgress(p => ({ ...p, done: p.done + 1, added: p.added + 1 }));

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, Star, Sparkles } from "lucide-react";
+import { ChevronRight, Star, Sparkles, Download, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/page-shell";
 import { CopyButton, LikeButton, SaveButton } from "@/components/actions";
@@ -27,8 +27,9 @@ function PromptPage() {
   const { post: p, loading } = usePostBySlug(slug);
   const posts = usePosts();
   const [active, setActive] = useState(0);
+  const [lightbox, setLightbox] = useState<number | null>(null);
 
-  useEffect(() => { setActive(0); }, [slug]);
+  useEffect(() => { setActive(0); setLightbox(null); }, [slug]);
 
   const prompts = useMemo(
     () => (p ? [p.content, ...p.extraPrompts].filter((t) => t && t.trim()) : []),
@@ -99,23 +100,42 @@ function PromptPage() {
       </nav>
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[1.1fr_1fr]">
-        <div className="glass-strong overflow-hidden rounded-[28px] p-3">
-          <div className="relative overflow-hidden rounded-3xl bg-black/30">
-            <img
-              src={mainImage}
-              alt={p.title}
-              className="mx-auto block max-h-[70vh] w-full object-contain"
-            />
-            {showGallery && (
-              <span className="absolute right-3 top-3 rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-extrabold text-white backdrop-blur">
-                {active + 1}/{images.length}
-              </span>
-            )}
+        <div>
+          <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.02]">
+            <button
+              type="button"
+              onClick={() => setLightbox(Math.min(active, images.length - 1))}
+              className="block w-full cursor-zoom-in"
+              aria-label="Open image"
+            >
+              <img
+                src={mainImage}
+                alt={p.title}
+                className="block h-auto w-full rounded-[28px] object-contain"
+              />
+            </button>
             {p.premium && (
-              <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-slate-900 shadow-sm">
+              <span className="pointer-events-none absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-slate-900 shadow-sm">
                 <Sparkles className="h-3 w-3" /> Premium
               </span>
             )}
+            <div className="pointer-events-none absolute right-3 top-3 flex items-center gap-2">
+              {showGallery && (
+                <span className="rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-extrabold text-white backdrop-blur">
+                  {active + 1}/{images.length}
+                </span>
+              )}
+              <a
+                href={mainImage}
+                download
+                target="_blank"
+                rel="noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="pointer-events-auto inline-flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-[11px] font-extrabold text-white backdrop-blur transition hover:bg-black/80"
+              >
+                <Download className="h-3.5 w-3.5" /> Download
+              </a>
+            </div>
           </div>
 
           {showGallery && (
@@ -136,6 +156,7 @@ function PromptPage() {
             </div>
           )}
         </div>
+
 
         <div className="lg:sticky lg:top-28 lg:self-start">
           {p.tool && (
@@ -207,6 +228,40 @@ function PromptPage() {
 
         </div>
       </div>
+
+      {lightbox !== null && images[lightbox] && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+          onClick={() => setLightbox(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <img
+            src={images[lightbox]}
+            alt={p.title}
+            onClick={(e) => e.stopPropagation()}
+            className="max-h-[88vh] max-w-full rounded-2xl object-contain"
+          />
+          <button
+            type="button"
+            onClick={() => setLightbox(null)}
+            aria-label="Close"
+            className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-white/20"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          <a
+            href={images[lightbox]}
+            download
+            target="_blank"
+            rel="noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="absolute bottom-6 left-1/2 inline-flex -translate-x-1/2 items-center gap-2 rounded-full bg-white/10 px-5 py-2.5 text-sm font-bold text-white backdrop-blur transition hover:bg-white/20"
+          >
+            <Download className="h-4 w-4" /> Download image
+          </a>
+        </div>
+      )}
 
       {related.length > 0 && (
         <section className="mt-20">

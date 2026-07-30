@@ -98,8 +98,8 @@ function CheckoutPage() {
         </p>
       </div>
 
-      <div className="mx-auto mt-10 grid max-w-4xl gap-5 lg:grid-cols-2">
-        <div className="glass-strong rounded-[28px] p-6 text-center">
+      <div className="mx-auto mt-10 grid w-full max-w-4xl gap-5 lg:grid-cols-2">
+        <div className="glass-strong min-w-0 rounded-[28px] p-6 text-center">
           <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Amount to pay</div>
           <div className="mt-1 text-4xl font-extrabold">{symbol}{price}</div>
           <div className="text-xs text-muted-foreground">one-time · lifetime access</div>
@@ -119,7 +119,7 @@ function CheckoutPage() {
               <button
                 type="button"
                 onClick={() => { navigator.clipboard?.writeText(upi); toast.success("UPI ID copied"); }}
-                className="mx-auto mt-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold"
+                className="mx-auto mt-5 inline-flex max-w-full items-center gap-2 truncate rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold"
               >
                 <Copy className="h-4 w-4" /> {upi}
               </button>
@@ -131,14 +131,14 @@ function CheckoutPage() {
           {s.premium_note && <p className="mt-4 text-xs text-muted-foreground">{s.premium_note}</p>}
         </div>
 
-        <form onSubmit={submit} className="glass-card rounded-[28px] p-6 text-left">
+        <form onSubmit={submit} className="glass-card min-w-0 rounded-[28px] p-6 text-left">
           <h2 className="text-lg font-extrabold tracking-tight">Submit payment proof</h2>
           <label className="mt-4 block text-xs font-bold uppercase tracking-wider text-muted-foreground">
             Email
             <input
               type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
               placeholder="you@example.com"
-              className="mt-1 w-full rounded-2xl border border-white/10 bg-white/5 p-3 text-sm font-normal normal-case text-foreground outline-none"
+              className="mt-1 block w-full max-w-full box-border rounded-2xl border border-white/10 bg-white/5 p-3 text-sm font-normal normal-case text-foreground outline-none"
             />
           </label>
           <label className="mt-4 block text-xs font-bold uppercase tracking-wider text-muted-foreground">
@@ -146,21 +146,21 @@ function CheckoutPage() {
             <input
               value={utr} onChange={(e) => setUtr(e.target.value)} required
               placeholder="e.g. 412345678901"
-              className="mt-1 w-full rounded-2xl border border-white/10 bg-white/5 p-3 text-sm font-normal normal-case text-foreground outline-none"
+              className="mt-1 block w-full max-w-full box-border rounded-2xl border border-white/10 bg-white/5 p-3 text-sm font-normal normal-case text-foreground outline-none"
             />
           </label>
           <label className="mt-4 block text-xs font-bold uppercase tracking-wider text-muted-foreground">
             Payment screenshot
-            <div className="mt-1 flex items-center gap-3 rounded-2xl border border-dashed border-white/15 bg-white/5 p-4">
+            <div className="mt-1 flex w-full max-w-full items-center gap-3 rounded-2xl border border-dashed border-white/15 bg-white/5 p-3">
               <Upload className="h-5 w-5 text-muted-foreground" />
               <input
                 type="file" accept="image/*"
                 onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])}
-                className="flex-1 text-sm font-normal normal-case"
+                className="w-full min-w-0 flex-1 text-xs font-normal normal-case file:mr-2 file:rounded-full file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-xs file:font-bold file:text-foreground"
               />
             </div>
             {uploading && <p className="mt-2 text-xs text-muted-foreground">Uploading…</p>}
-            {shot && <img src={shot} alt="Payment screenshot" className="mt-3 h-40 w-auto rounded-xl object-contain" />}
+            {shot && <img src={shot} alt="Payment screenshot" className="mt-3 h-40 w-full rounded-xl object-contain" />}
           </label>
 
           <button
