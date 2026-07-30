@@ -61,8 +61,20 @@ function PostsAdmin() {
 
   async function onUpload(file: File) {
     const url = await uploadImage(file);
-    if (url && editing) setEditing({ ...editing, featured_image: url });
+    if (!url) return toast.error("Upload failed");
+    if (editing) setEditing({ ...editing, featured_image: url });
   }
+
+  async function onPromptImage(file: File, i: number) {
+    if (!editing) return;
+    const url = await uploadImage(file);
+    if (!url) return toast.error("Upload failed");
+    const next = [...(editing.prompt_images ?? [])];
+    while (next.length <= i) next.push("");
+    next[i] = url;
+    setEditing({ ...editing, prompt_images: next });
+  }
+
 
   if (editing) return (
     <div>
