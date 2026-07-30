@@ -37,18 +37,24 @@ function HomePage() {
   const grid = useMemo(() => {
     if (!posts) return [];
     let list = [...posts];
+    const num = (v: unknown) => Number(v) || 0;
     const recency = (x: (typeof list)[number]) => +new Date(x.createdAt) || 0;
+    const score = (x: (typeof list)[number]) =>
+      num(x.copies) * 2 + num(x.likes) + num(x.rating) * 5;
     if (tab === "latest") list.sort((a, b) => recency(b) - recency(a));
     if (tab === "trending")
       list.sort(
         (a, b) =>
-          b.copies * 2 + b.likes - (a.copies * 2 + a.likes) ||
-          (b.rating ?? 0) - (a.rating ?? 0) ||
+          num(b.copies) * 2 + num(b.likes) - (num(a.copies) * 2 + num(a.likes)) ||
+          num(b.rating) - num(a.rating) ||
           recency(b) - recency(a),
       );
     if (tab === "popular")
       list.sort(
-        (a, b) => b.likes - a.likes || (b.rating ?? 0) - (a.rating ?? 0) || recency(b) - recency(a),
+        (a, b) =>
+          num(b.likes) - num(a.likes) ||
+          score(b) - score(a) ||
+          recency(b) - recency(a),
       );
     if (q.trim()) {
       const s = q.toLowerCase();
