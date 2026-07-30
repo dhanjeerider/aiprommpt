@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, Star, Sparkles } from "lucide-react";
+import { ChevronRight, Star, Sparkles, Download, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/page-shell";
 import { CopyButton, LikeButton, SaveButton } from "@/components/actions";
@@ -27,8 +27,9 @@ function PromptPage() {
   const { post: p, loading } = usePostBySlug(slug);
   const posts = usePosts();
   const [active, setActive] = useState(0);
+  const [lightbox, setLightbox] = useState<number | null>(null);
 
-  useEffect(() => { setActive(0); }, [slug]);
+  useEffect(() => { setActive(0); setLightbox(null); }, [slug]);
 
   const prompts = useMemo(
     () => (p ? [p.content, ...p.extraPrompts].filter((t) => t && t.trim()) : []),
@@ -227,6 +228,40 @@ function PromptPage() {
 
         </div>
       </div>
+
+      {lightbox !== null && images[lightbox] && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+          onClick={() => setLightbox(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <img
+            src={images[lightbox]}
+            alt={p.title}
+            onClick={(e) => e.stopPropagation()}
+            className="max-h-[88vh] max-w-full rounded-2xl object-contain"
+          />
+          <button
+            type="button"
+            onClick={() => setLightbox(null)}
+            aria-label="Close"
+            className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-white/20"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          <a
+            href={images[lightbox]}
+            download
+            target="_blank"
+            rel="noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="absolute bottom-6 left-1/2 inline-flex -translate-x-1/2 items-center gap-2 rounded-full bg-white/10 px-5 py-2.5 text-sm font-bold text-white backdrop-blur transition hover:bg-white/20"
+          >
+            <Download className="h-4 w-4" /> Download image
+          </a>
+        </div>
+      )}
 
       {related.length > 0 && (
         <section className="mt-20">
