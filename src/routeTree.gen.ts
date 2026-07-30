@@ -15,6 +15,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PremiumRouteImport } from './routes/premium'
 import { Route as LibrariesRouteImport } from './routes/libraries'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AiPolicyRouteImport } from './routes/ai-policy'
 import { Route as AboutRouteImport } from './routes/about'
@@ -62,6 +63,11 @@ const LibrariesRoute = LibrariesRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -163,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/ai-policy': typeof AiPolicyRoute
   '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/libraries': typeof LibrariesRoute
   '/premium': typeof PremiumRoute
@@ -188,6 +195,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/ai-policy': typeof AiPolicyRoute
   '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/libraries': typeof LibrariesRoute
   '/premium': typeof PremiumRoute
@@ -214,6 +222,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/ai-policy': typeof AiPolicyRoute
   '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/libraries': typeof LibrariesRoute
   '/premium': typeof PremiumRoute
@@ -241,6 +250,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/ai-policy'
     | '/auth'
+    | '/checkout'
     | '/contact'
     | '/libraries'
     | '/premium'
@@ -266,6 +276,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/ai-policy'
     | '/auth'
+    | '/checkout'
     | '/contact'
     | '/libraries'
     | '/premium'
@@ -291,6 +302,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/ai-policy'
     | '/auth'
+    | '/checkout'
     | '/contact'
     | '/libraries'
     | '/premium'
@@ -318,6 +330,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AiPolicyRoute: typeof AiPolicyRoute
   AuthRoute: typeof AuthRoute
+  CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
   LibrariesRoute: typeof LibrariesRoute
   PremiumRoute: typeof PremiumRoute
@@ -373,6 +386,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -547,6 +567,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AiPolicyRoute: AiPolicyRoute,
   AuthRoute: AuthRoute,
+  CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
   LibrariesRoute: LibrariesRoute,
   PremiumRoute: PremiumRoute,
