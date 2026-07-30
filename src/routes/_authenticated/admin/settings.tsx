@@ -25,7 +25,10 @@ type Settings = {
   premium_price: string | null;
   premium_currency: string | null;
   analytics_gtag: string | null;
+  premium_note: string | null;
+  footer_links: { label: string; href: string; group?: string }[] | null;
 };
+
 
 function SettingsAdmin() {
   const [s, setS] = useState<Settings | null>(null);
