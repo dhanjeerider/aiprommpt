@@ -28,6 +28,7 @@ type Tab = "latest" | "trending" | "popular";
 
 function HomePage() {
   const [tab, setTab] = useState<Tab>("latest");
+  const [cols, setCols] = useState<1 | 2>(1);
   const [q, setQ] = useState("");
   const posts = usePosts();
   const settings = useSettings();
