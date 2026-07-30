@@ -111,7 +111,7 @@ function PromptPage() {
               <img
                 src={mainImage}
                 alt={p.title}
-                className="block h-auto w-full rounded-[28px] object-contain"
+                className="block aspect-[2/3] w-full rounded-[28px] object-cover"
               />
             </button>
             {p.premium && (
@@ -147,7 +147,7 @@ function PromptPage() {
                   onClick={() => setActive(i)}
                   className={`relative overflow-hidden rounded-xl border transition ${i === active ? "border-primary ring-2 ring-primary/40" : "border-white/10"}`}
                 >
-                  <img src={src} alt={`Prompt ${i + 1} example`} className="aspect-square w-full object-cover" />
+                  <img src={src} alt={`Prompt ${i + 1} example`} className="aspect-[2/3] w-full object-cover" />
                   <span className="absolute left-1 top-1 grid h-5 w-5 place-items-center rounded-full bg-black/70 text-[10px] font-extrabold text-white">
                     {i + 1}
                   </span>
@@ -177,6 +177,20 @@ function PromptPage() {
               <Star className="h-3.5 w-3.5 fill-current text-amber-500" />
               {p.rating.toFixed(1)}
             </span>
+            {p.createdAt && (
+              <>
+                <span>·</span>
+                <time dateTime={new Date(p.createdAt).toISOString()} className="text-xs">
+                  {new Date(p.createdAt).toLocaleString(undefined, {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </time>
+              </>
+            )}
           </div>
           <p className="mt-4 text-muted-foreground">{p.excerpt}</p>
 
