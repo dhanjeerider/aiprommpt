@@ -25,6 +25,7 @@ import { Route as ToolSlugRouteImport } from './routes/tool.$slug'
 import { Route as TagSlugRouteImport } from './routes/tag.$slug'
 import { Route as StyleSlugRouteImport } from './routes/style.$slug'
 import { Route as PromptSlugRouteImport } from './routes/prompt.$slug'
+import { Route as PageSlugRouteImport } from './routes/page.$slug'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
@@ -114,6 +115,11 @@ const PromptSlugRoute = PromptSlugRouteImport.update({
   path: '/prompt/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PageSlugRoute = PageSlugRouteImport.update({
+  id: '/page/$slug',
+  path: '/page/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CategorySlugRoute = CategorySlugRouteImport.update({
   id: '/category/$slug',
   path: '/category/$slug',
@@ -178,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/category/$slug': typeof CategorySlugRoute
+  '/page/$slug': typeof PageSlugRoute
   '/prompt/$slug': typeof PromptSlugRoute
   '/style/$slug': typeof StyleSlugRoute
   '/tag/$slug': typeof TagSlugRoute
@@ -203,6 +210,7 @@ export interface FileRoutesByTo {
   '/refund': typeof RefundRoute
   '/terms': typeof TermsRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/page/$slug': typeof PageSlugRoute
   '/prompt/$slug': typeof PromptSlugRoute
   '/style/$slug': typeof StyleSlugRoute
   '/tag/$slug': typeof TagSlugRoute
@@ -231,6 +239,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/category/$slug': typeof CategorySlugRoute
+  '/page/$slug': typeof PageSlugRoute
   '/prompt/$slug': typeof PromptSlugRoute
   '/style/$slug': typeof StyleSlugRoute
   '/tag/$slug': typeof TagSlugRoute
@@ -259,6 +268,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/admin'
     | '/category/$slug'
+    | '/page/$slug'
     | '/prompt/$slug'
     | '/style/$slug'
     | '/tag/$slug'
@@ -284,6 +294,7 @@ export interface FileRouteTypes {
     | '/refund'
     | '/terms'
     | '/category/$slug'
+    | '/page/$slug'
     | '/prompt/$slug'
     | '/style/$slug'
     | '/tag/$slug'
@@ -311,6 +322,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authenticated/admin'
     | '/category/$slug'
+    | '/page/$slug'
     | '/prompt/$slug'
     | '/style/$slug'
     | '/tag/$slug'
@@ -338,6 +350,7 @@ export interface RootRouteChildren {
   RefundRoute: typeof RefundRoute
   TermsRoute: typeof TermsRoute
   CategorySlugRoute: typeof CategorySlugRoute
+  PageSlugRoute: typeof PageSlugRoute
   PromptSlugRoute: typeof PromptSlugRoute
   StyleSlugRoute: typeof StyleSlugRoute
   TagSlugRoute: typeof TagSlugRoute
@@ -458,6 +471,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PromptSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/page/$slug': {
+      id: '/page/$slug'
+      path: '/page/$slug'
+      fullPath: '/page/$slug'
+      preLoaderRoute: typeof PageSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/category/$slug': {
       id: '/category/$slug'
       path: '/category/$slug'
@@ -575,6 +595,7 @@ const rootRouteChildren: RootRouteChildren = {
   RefundRoute: RefundRoute,
   TermsRoute: TermsRoute,
   CategorySlugRoute: CategorySlugRoute,
+  PageSlugRoute: PageSlugRoute,
   PromptSlugRoute: PromptSlugRoute,
   StyleSlugRoute: StyleSlugRoute,
   TagSlugRoute: TagSlugRoute,
