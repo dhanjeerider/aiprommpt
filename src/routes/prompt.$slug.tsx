@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/page-shell";
 import { CopyButton, LikeButton, SaveButton } from "@/components/actions";
 import { PromptCard } from "@/components/prompt-card";
+import { Skeleton } from "@/components/page-transition";
 import { usePostBySlug, usePosts } from "@/lib/posts";
 
 export const Route = createFileRoute("/prompt/$slug")({
@@ -25,6 +26,21 @@ function PromptPage() {
   const { slug } = Route.useParams();
   const { post: p, loading } = usePostBySlug(slug);
   const posts = usePosts();
+  const [active, setActive] = useState(0);
+
+  useEffect(() => { setActive(0); }, [slug]);
+
+  const prompts = useMemo(
+    () => (p ? [p.content, ...p.extraPrompts].filter((t) => t && t.trim()) : []),
+    [p],
+  );
+
+  // image i belongs to prompt i (index 0 = featured image / main prompt)
+  const images = useMemo(() => {
+    if (!p) return [];
+    const list = [p.featuredImage, ...p.promptImages].filter((x) => x && x.trim());
+    return Array.from(new Set(list));
+  }, [p]);
 
   const related = useMemo(() => {
     if (!p || !posts) return [];
@@ -36,7 +52,15 @@ function PromptPage() {
   if (loading) {
     return (
       <PageShell>
-        <div className="glass-card mt-8 h-96 animate-pulse rounded-3xl" />
+        <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr]">
+          <Skeleton className="aspect-[4/5] w-full rounded-[28px]" />
+          <div className="space-y-4">
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-40 w-full" />
+          </div>
+        </div>
       </PageShell>
     );
   }
@@ -55,9 +79,12 @@ function PromptPage() {
     );
   }
 
+  const showGallery = images.length > 1;
+  const mainImage = images[Math.min(active, images.length - 1)] ?? images[0];
+
   return (
     <PageShell>
-      <nav className="flex items-center gap-1.5 text-xs text-muted-foreground">
+      <nav className="flex flex-wrap items-center justify-center gap-1.5 text-xs text-muted-foreground sm:justify-start">
         <Link to="/" className="hover:text-foreground">Home</Link>
         <ChevronRight className="h-3 w-3" />
         {p.category && (
@@ -73,20 +100,38 @@ function PromptPage() {
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[1.1fr_1fr]">
         <div className="glass-strong overflow-hidden rounded-[28px] p-3">
-          <div className="relative overflow-hidden rounded-3xl">
-            <img src={p.featuredImage} alt={p.title} className="aspect-[4/5] w-full object-cover" />
+          <div className="relative overflow-hidden rounded-3xl bg-black/30">
+            <img
+              src={mainImage}
+              alt={p.title}
+              className="mx-auto block max-h-[70vh] w-full object-contain"
+            />
+            {showGallery && (
+              <span className="absolute right-3 top-3 rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-extrabold text-white backdrop-blur">
+                {active + 1}/{images.length}
+              </span>
+            )}
             {p.premium && (
               <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-slate-900 shadow-sm">
                 <Sparkles className="h-3 w-3" /> Premium
               </span>
             )}
           </div>
-          {related.length > 0 && (
+
+          {showGallery && (
             <div className="mt-3 grid grid-cols-4 gap-2">
-              {related.slice(0, 4).map((r) => (
-                <Link key={r.slug} to="/prompt/$slug" params={{ slug: r.slug }} className="overflow-hidden rounded-xl border border-white/10">
-                  <img src={r.featuredImage} alt={r.title} className="aspect-square w-full object-cover" />
-                </Link>
+              {images.map((src, i) => (
+                <button
+                  key={src + i}
+                  type="button"
+                  onClick={() => setActive(i)}
+                  className={`relative overflow-hidden rounded-xl border transition ${i === active ? "border-primary ring-2 ring-primary/40" : "border-white/10"}`}
+                >
+                  <img src={src} alt={`Prompt ${i + 1} example`} className="aspect-square w-full object-cover" />
+                  <span className="absolute left-1 top-1 grid h-5 w-5 place-items-center rounded-full bg-black/70 text-[10px] font-extrabold text-white">
+                    {i + 1}
+                  </span>
+                </button>
               ))}
             </div>
           )}
@@ -99,7 +144,7 @@ function PromptPage() {
             </span>
           )}
           <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{p.title}</h1>
-          <div className="mt-3 flex items-center gap-3 text-sm text-muted-foreground">
+          <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
             <span className="inline-flex items-center gap-2">
               <span className="grid h-6 w-6 place-items-center rounded-full bg-[image:var(--gradient-primary)] text-[10px] font-bold text-white">
                 {p.author.avatar}
@@ -120,10 +165,17 @@ function PromptPage() {
             <LikeButton initial={p.likes} />
           </div>
 
-          {[p.content, ...((p as any).extraPrompts ?? [])].filter((t: string) => t && t.trim()).map((text: string, i: number) => (
+          {prompts.map((text, i) => (
             <div key={i} className="glass-card mt-6 rounded-3xl p-5">
               <div className="flex items-center justify-between gap-3">
-                <h3 className="text-sm font-semibold">Prompt{i > 0 ? ` ${i + 1}` : ""}</h3>
+                <h3 className="inline-flex items-center gap-2 text-sm font-semibold">
+                  {prompts.length > 1 && (
+                    <span className="grid h-5 w-5 place-items-center rounded-full bg-[image:var(--gradient-primary)] text-[10px] font-extrabold text-white">
+                      {i + 1}
+                    </span>
+                  )}
+                  Prompt{prompts.length > 1 ? ` ${i + 1}` : ""}
+                </h3>
                 <CopyButton text={text} className="px-3 py-1.5 text-xs" />
               </div>
               <pre className="mt-3 max-h-[600px] overflow-auto whitespace-pre-wrap break-words rounded-2xl border border-white/10 bg-black/30 p-4 font-mono text-[13px] leading-relaxed text-foreground">
@@ -211,4 +263,3 @@ function RatingBox({ slug, initial }: { slug: string; initial: number }) {
     </div>
   );
 }
-
