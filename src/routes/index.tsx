@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { motion } from "motion/react";
-import { Search, Clock, Flame, Sparkles, ArrowRight } from "lucide-react";
+import { Search, Clock, Flame, Sparkles, ArrowRight, LayoutGrid, Square } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { PromptCard } from "@/components/prompt-card";
 import { AdSlot } from "@/components/ad-slot";
@@ -148,7 +148,25 @@ function HomePage() {
           ))}
         </div>
 
-        <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-4 flex items-center justify-end sm:hidden">
+          <div className="glass-card inline-flex items-center gap-1 rounded-full p-1">
+            {([1, 2] as const).map((n) => (
+              <button
+                key={n}
+                onClick={() => setCols(n)}
+                aria-label={`${n} column grid`}
+                aria-pressed={cols === n}
+                className={`grid h-8 w-8 place-items-center rounded-full transition ${
+                  cols === n ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground"
+                }`}
+              >
+                {n === 1 ? <Square className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className={`mt-4 grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ${cols === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
           {posts === null ? (
             Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="aspect-[4/5] animate-pulse rounded-3xl bg-white/5" />
