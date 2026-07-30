@@ -2,15 +2,33 @@ import { Link } from "@tanstack/react-router";
 import { Sparkles, Github, Twitter, Instagram } from "lucide-react";
 import { useSettings } from "@/lib/settings";
 
+const defaultLinks = [
+  { label: "Home", href: "/", group: "Explore" },
+  { label: "Categories", href: "/libraries", group: "Explore" },
+  { label: "Premium", href: "/premium", group: "Explore" },
+  { label: "Sign in", href: "/auth", group: "Explore" },
+  { label: "About", href: "/about", group: "Company" },
+  { label: "Contact", href: "/contact", group: "Company" },
+  { label: "Privacy", href: "/privacy", group: "Company" },
+  { label: "Terms", href: "/terms", group: "Company" },
+];
+
 export function SiteFooter() {
   const settings = useSettings();
+  const links = settings.footer_links.length ? settings.footer_links : defaultLinks;
+
+  const groups = links.reduce<Record<string, typeof links>>((acc, l) => {
+    const g = l.group?.trim() || "Explore";
+    (acc[g] ||= []).push(l);
+    return acc;
+  }, {});
 
   return (
     <footer className="mx-auto mt-24 w-full max-w-6xl px-4 pb-10">
       <div className="glass-card rounded-3xl p-8 sm:p-10">
-        <div className="grid gap-10 md:grid-cols-4">
+        <div className="grid gap-10 text-center md:grid-cols-4 md:text-left">
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2 md:justify-start">
               {settings.logo_url ? (
                 <img src={settings.logo_url} alt={settings.site_title} className="h-9 w-9 rounded-full object-cover" />
               ) : (
@@ -20,8 +38,8 @@ export function SiteFooter() {
               )}
               <span className="text-lg font-bold">{settings.site_title}</span>
             </div>
-            <p className="mt-4 max-w-sm text-sm text-muted-foreground">{settings.site_tagline}</p>
-            <div className="mt-5 flex gap-2">
+            <p className="mx-auto mt-4 max-w-sm text-sm text-muted-foreground md:mx-0">{settings.site_tagline}</p>
+            <div className="mt-5 flex justify-center gap-2 md:justify-start">
               {[Twitter, Instagram, Github].map((Icon, i) => (
                 <a
                   key={i}
@@ -35,30 +53,25 @@ export function SiteFooter() {
             </div>
           </div>
 
-          <div>
-            <h4 className="text-sm font-semibold">Explore</h4>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/" className="hover:text-foreground">Home</Link></li>
-              <li><Link to="/libraries" className="hover:text-foreground">Categories</Link></li>
-              <li><Link to="/premium" className="hover:text-foreground">Premium</Link></li>
-              <li><Link to="/auth" className="hover:text-foreground">Sign in</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-sm font-semibold">Company</h4>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/about" className="hover:text-foreground">About</Link></li>
-              <li><Link to="/contact" className="hover:text-foreground">Contact</Link></li>
-              <li><Link to="/privacy" className="hover:text-foreground">Privacy</Link></li>
-              <li><Link to="/terms" className="hover:text-foreground">Terms</Link></li>
-              <li><Link to="/ai-policy" className="hover:text-foreground">AI Policy</Link></li>
-              <li><Link to="/refund" className="hover:text-foreground">Refund Policy</Link></li>
-            </ul>
-          </div>
+          {Object.entries(groups).slice(0, 2).map(([group, items]) => (
+            <div key={group}>
+              <h4 className="text-sm font-semibold">{group}</h4>
+              <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                {items.map((l) => (
+                  <li key={l.label + l.href}>
+                    {l.href.startsWith("http") ? (
+                      <a href={l.href} className="hover:text-foreground" target="_blank" rel="noreferrer">{l.label}</a>
+                    ) : (
+                      <Link to={l.href} className="hover:text-foreground">{l.label}</Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
-        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-muted-foreground sm:flex-row">
-          <span>© {new Date().getFullYear()} PromptPalette. Crafted for creators.</span>
+        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-center text-xs text-muted-foreground sm:flex-row sm:text-left">
+          <span>© {new Date().getFullYear()} {settings.site_title}. Crafted for creators.</span>
           <span>Made with care · Tested prompts for major AI tools</span>
         </div>
       </div>
