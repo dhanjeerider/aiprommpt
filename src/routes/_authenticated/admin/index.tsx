@@ -8,6 +8,7 @@ export const Route = createFileRoute("/_authenticated/admin/")({
 
 function Dashboard() {
   const [counts, setCounts] = useState({ posts: 0, libraries: 0, pages: 0, orders: 0 });
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     (async () => {
       const [p, l, pg, o] = await Promise.all([
@@ -17,6 +18,7 @@ function Dashboard() {
         supabase.from("premium_orders").select("id", { count: "exact", head: true }),
       ]);
       setCounts({ posts: p.count ?? 0, libraries: l.count ?? 0, pages: pg.count ?? 0, orders: o.count ?? 0 });
+      setLoading(false);
     })();
   }, []);
   const cards = [
@@ -33,7 +35,7 @@ function Dashboard() {
         {cards.map(c => (
           <div key={c.label} className="glass-card rounded-2xl p-4">
             <div className="text-xs uppercase tracking-wider text-muted-foreground">{c.label}</div>
-            <div className="mt-1 text-3xl font-black">{c.value}</div>
+            {loading ? <div className="mt-2 h-8 w-16 animate-pulse rounded-lg bg-white/10" /> : <div className="mt-1 text-3xl font-black">{c.value}</div>}
           </div>
         ))}
       </div>
