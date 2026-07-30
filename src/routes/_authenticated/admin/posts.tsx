@@ -9,16 +9,18 @@ export const Route = createFileRoute("/_authenticated/admin/posts")({ component:
 type Post = {
   id: string; slug: string; title: string; excerpt: string; content_prompt: string;
   extra_prompts: string[];
+  prompt_images: string[];
   featured_image: string; category: string | null; library_slug: string | null;
   tags: string[]; tool: string | null; author_name: string; premium: boolean;
   likes: number; published: boolean;
 };
 
 const empty: Omit<Post, "id"> = {
-  slug: "", title: "", excerpt: "", content_prompt: "", extra_prompts: [], featured_image: "",
+  slug: "", title: "", excerpt: "", content_prompt: "", extra_prompts: [], prompt_images: [], featured_image: "",
   category: "", library_slug: "", tags: [], tool: "gemini", author_name: "PromptPalette",
   premium: false, likes: 0, published: true,
 };
+
 
 function PostsAdmin() {
   const [rows, setRows] = useState<Post[]>([]);
