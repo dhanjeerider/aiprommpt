@@ -13,6 +13,7 @@ define( 'PP_VERSION', '1.0.0' );
 define( 'PP_DIR', get_template_directory() );
 define( 'PP_URI', get_template_directory_uri() );
 
+require_once PP_DIR . '/inc/walker.php';
 require_once PP_DIR . '/inc/cpt.php';
 require_once PP_DIR . '/inc/meta.php';
 require_once PP_DIR . '/inc/settings.php';
