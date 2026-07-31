@@ -1,12 +1,15 @@
 import { useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "motion/react";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 export function RouteProgress() {
   const isPending = useRouterState({ select: (s) => s.status === "pending" });
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   return (
     <AnimatePresence>
-      {isPending && (
+      {mounted && isPending && (
+
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
