@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, Star, Sparkles, Download, X } from "lucide-react";
+import { ChevronRight, Star, Sparkles, Download, X, Share2, Link as LinkIcon } from "lucide-react";
+import { toast } from "sonner";
 import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/page-shell";
 import { CopyButton, LikeButton, SaveButton } from "@/components/actions";
@@ -85,19 +86,20 @@ function PromptPage() {
 
   return (
     <PageShell>
-      <nav className="flex flex-wrap items-center justify-center gap-1.5 text-xs text-muted-foreground sm:justify-start">
-        <Link to="/" className="hover:text-foreground">Home</Link>
-        <ChevronRight className="h-3 w-3" />
+      <nav className="glass-card flex w-fit max-w-full flex-wrap items-center gap-1.5 rounded-full px-2 py-1.5 text-xs text-muted-foreground">
+        <Link to="/" className="rounded-full px-2.5 py-1 font-semibold transition hover:bg-white/10 hover:text-foreground">Home</Link>
+        <ChevronRight className="h-3 w-3 shrink-0" />
         {p.category && (
           <>
-            <Link to="/category/$slug" params={{ slug: p.category }} className="capitalize hover:text-foreground">
+            <Link to="/category/$slug" params={{ slug: p.category }} className="rounded-full px-2.5 py-1 font-semibold uppercase tracking-wide transition hover:bg-white/10 hover:text-foreground">
               {p.category.replace(/-/g, " ")}
             </Link>
-            <ChevronRight className="h-3 w-3" />
+            <ChevronRight className="h-3 w-3 shrink-0" />
           </>
         )}
-        <span className="line-clamp-1 text-foreground">{p.title}</span>
+        <span className="line-clamp-1 rounded-full bg-[image:var(--gradient-primary)] px-3 py-1 font-bold text-white">{p.title}</span>
       </nav>
+
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[1.1fr_1fr]">
         <div>
@@ -159,31 +161,36 @@ function PromptPage() {
 
 
         <div className="lg:sticky lg:top-28 lg:self-start">
-          {p.tool && (
-            <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-medium capitalize text-muted-foreground">
-              {p.tool.replace("-", " ")}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center rounded-full bg-foreground px-3 py-1 text-[11px] font-black uppercase tracking-widest text-background">
+              Prompt Detail
             </span>
-          )}
-          <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{p.title}</h1>
-          <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            <span className="inline-flex items-center gap-2">
-              <span className="grid h-6 w-6 place-items-center rounded-full bg-[image:var(--gradient-primary)] text-[10px] font-bold text-white">
-                {p.author.avatar}
+            {p.tool && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-medium capitalize text-muted-foreground">
+                {p.tool.replace("-", " ")}
               </span>
-              {p.author.name}
-            </span>
-            <span>·</span>
-            <span className="inline-flex items-center gap-1">
-              <Star className="h-3.5 w-3.5 fill-current text-amber-500" />
-              {p.rating.toFixed(1)}
+            )}
+            {p.premium && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-[image:var(--gradient-primary)] px-2.5 py-1 text-[11px] font-bold text-white">
+                <Sparkles className="h-3 w-3" /> Premium
+              </span>
+            )}
+          </div>
+
+          <h1 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">{p.title}</h1>
+
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+            <span>
+              Shared by{" "}
+              <span className="font-bold text-primary">@{p.author.name.replace(/\s+/g, "")}</span>
             </span>
             {p.createdAt && (
               <>
                 <span>·</span>
-                <time dateTime={new Date(p.createdAt).toISOString()} className="text-xs">
+                <time dateTime={new Date(p.createdAt).toISOString()}>
                   {new Date(p.createdAt).toLocaleString(undefined, {
                     day: "numeric",
-                    month: "short",
+                    month: "long",
                     year: "numeric",
                     hour: "2-digit",
                     minute: "2-digit",
@@ -191,33 +198,49 @@ function PromptPage() {
                 </time>
               </>
             )}
+            <span>·</span>
+            <span className="inline-flex items-center gap-1">
+              <Star className="h-3.5 w-3.5 fill-current text-amber-500" />
+              {p.rating.toFixed(1)}
+            </span>
           </div>
-          <p className="mt-4 text-muted-foreground">{p.excerpt}</p>
 
-          <div className="mt-6 flex flex-wrap gap-2">
-            <CopyButton text={p.content} />
-            <SaveButton />
-            <LikeButton initial={p.likes} />
-          </div>
+          {p.excerpt && <p className="mt-4 text-muted-foreground">{p.excerpt}</p>}
 
           {prompts.map((text, i) => (
-            <div key={i} className="glass-card mt-6 rounded-3xl p-5">
+            <div key={i} className="glass-card mt-6 rounded-[28px] p-4 sm:p-5">
               <div className="flex items-center justify-between gap-3">
-                <h3 className="inline-flex items-center gap-2 text-sm font-semibold">
-                  {prompts.length > 1 && (
-                    <span className="grid h-5 w-5 place-items-center rounded-full bg-[image:var(--gradient-primary)] text-[10px] font-extrabold text-white">
-                      {i + 1}
-                    </span>
-                  )}
-                  Prompt{prompts.length > 1 ? ` ${i + 1}` : ""}
-                </h3>
-                <CopyButton text={text} className="px-3 py-1.5 text-xs" />
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-primary/15 text-primary">
+                    <Sparkles className="h-4 w-4" />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="text-[12px] font-black uppercase tracking-widest text-primary">
+                      Prompt{prompts.length > 1 ? ` ${i + 1}` : ""}
+                    </div>
+                    <div className="truncate text-[12px] text-muted-foreground">
+                      Optimized for {p.tool ? p.tool.replace("-", " ") : "ChatGPT & Gemini"}
+                    </div>
+                  </div>
+                </div>
+                <SaveButton />
               </div>
-              <pre className="mt-3 max-h-[600px] overflow-auto whitespace-pre-wrap break-words rounded-2xl border border-white/10 bg-black/30 p-4 font-mono text-[13px] leading-relaxed text-foreground">
-{text}
-              </pre>
+
+              <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                <p className="select-all whitespace-pre-wrap break-words text-[15px] font-medium leading-[1.7] text-foreground/90">
+                  {text}
+                </p>
+              </div>
+
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <CopyButton text={text} />
+                <LikeButton initial={p.likes} />
+              </div>
             </div>
           ))}
+
+          <ShareRow title={p.title} />
+
 
 
           {(p.tags ?? []).length > 0 && (
@@ -328,6 +351,48 @@ function RatingBox({ slug, initial }: { slug: string; initial: number }) {
         <span className="ml-3 text-sm text-muted-foreground">
           {mine ? `Your rating: ${mine}/5` : `${initial.toFixed(1)} average`}
         </span>
+      </div>
+    </div>
+  );
+}
+
+function ShareRow({ title }: { title: string }) {
+  const [url, setUrl] = useState("");
+  useEffect(() => { setUrl(window.location.href); }, []);
+  const text = encodeURIComponent(title);
+  const u = encodeURIComponent(url);
+  const items = [
+    { label: "Facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${u}`, cls: "bg-[#1877f2]" },
+    { label: "X", href: `https://twitter.com/intent/tweet?text=${text}&url=${u}`, cls: "bg-foreground text-background" },
+    { label: "WhatsApp", href: `https://wa.me/?text=${text}%20${u}`, cls: "bg-[#25d366]" },
+    { label: "Telegram", href: `https://t.me/share/url?url=${u}&text=${text}`, cls: "bg-[#29a9eb]" },
+  ];
+  return (
+    <div className="glass-card mt-6 flex flex-wrap items-center justify-between gap-3 rounded-[28px] p-4 sm:p-5">
+      <div className="inline-flex items-center gap-2 text-sm font-bold">
+        <Share2 className="h-4 w-4" /> Share
+      </div>
+      <div className="flex items-center gap-2">
+        {items.map((s) => (
+          <a
+            key={s.label}
+            href={s.href}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`Share on ${s.label}`}
+            className={`grid h-10 w-10 place-items-center rounded-full text-xs font-black text-white shadow-md transition hover:opacity-90 ${s.cls}`}
+          >
+            {s.label[0]}
+          </a>
+        ))}
+        <button
+          type="button"
+          aria-label="Copy link"
+          onClick={() => { navigator.clipboard.writeText(url).then(() => toast.success("Link copied")); }}
+          className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 transition hover:bg-white/10"
+        >
+          <LinkIcon className="h-4 w-4" />
+        </button>
       </div>
     </div>
   );
