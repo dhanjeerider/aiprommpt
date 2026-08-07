@@ -85,19 +85,20 @@ function PromptPage() {
 
   return (
     <PageShell>
-      <nav className="flex flex-wrap items-center justify-center gap-1.5 text-xs text-muted-foreground sm:justify-start">
-        <Link to="/" className="hover:text-foreground">Home</Link>
-        <ChevronRight className="h-3 w-3" />
+      <nav className="glass-card flex w-fit max-w-full flex-wrap items-center gap-1.5 rounded-full px-2 py-1.5 text-xs text-muted-foreground">
+        <Link to="/" className="rounded-full px-2.5 py-1 font-semibold transition hover:bg-white/10 hover:text-foreground">Home</Link>
+        <ChevronRight className="h-3 w-3 shrink-0" />
         {p.category && (
           <>
-            <Link to="/category/$slug" params={{ slug: p.category }} className="capitalize hover:text-foreground">
+            <Link to="/category/$slug" params={{ slug: p.category }} className="rounded-full px-2.5 py-1 font-semibold uppercase tracking-wide transition hover:bg-white/10 hover:text-foreground">
               {p.category.replace(/-/g, " ")}
             </Link>
-            <ChevronRight className="h-3 w-3" />
+            <ChevronRight className="h-3 w-3 shrink-0" />
           </>
         )}
-        <span className="line-clamp-1 text-foreground">{p.title}</span>
+        <span className="line-clamp-1 rounded-full bg-[image:var(--gradient-primary)] px-3 py-1 font-bold text-white">{p.title}</span>
       </nav>
+
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[1.1fr_1fr]">
         <div>
