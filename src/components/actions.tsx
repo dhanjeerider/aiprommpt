@@ -38,7 +38,7 @@ export function LikeButton({ initial = 0 }: { initial?: number }) {
         setCount((c) => c + (liked ? -1 : 1));
       }}
       className={cn(
-        "btn-red inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm shadow-lg transition hover:opacity-95"
+        "inline-flex items-center justify-center gap-2 rounded-full bg-[image:var(--gradient-primary)] px-6 py-3 text-sm font-extrabold text-white shadow-lg transition hover:opacity-95"
       )}
     >
       <Heart className={cn("h-4 w-4", liked && "fill-current")} />
