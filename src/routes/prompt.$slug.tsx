@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight, Star, Sparkles, Download, X } from "lucide-react";
+import { ChevronRight, Star, Sparkles, Download, X, Share2, Link as LinkIcon } from "lucide-react";
+import { toast } from "sonner";
 import { useEffect, useMemo, useState } from "react";
 import { PageShell } from "@/components/page-shell";
 import { CopyButton, LikeButton, SaveButton } from "@/components/actions";
@@ -350,6 +351,48 @@ function RatingBox({ slug, initial }: { slug: string; initial: number }) {
         <span className="ml-3 text-sm text-muted-foreground">
           {mine ? `Your rating: ${mine}/5` : `${initial.toFixed(1)} average`}
         </span>
+      </div>
+    </div>
+  );
+}
+
+function ShareRow({ title }: { title: string }) {
+  const [url, setUrl] = useState("");
+  useEffect(() => { setUrl(window.location.href); }, []);
+  const text = encodeURIComponent(title);
+  const u = encodeURIComponent(url);
+  const items = [
+    { label: "Facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${u}`, cls: "bg-[#1877f2]" },
+    { label: "X", href: `https://twitter.com/intent/tweet?text=${text}&url=${u}`, cls: "bg-foreground text-background" },
+    { label: "WhatsApp", href: `https://wa.me/?text=${text}%20${u}`, cls: "bg-[#25d366]" },
+    { label: "Telegram", href: `https://t.me/share/url?url=${u}&text=${text}`, cls: "bg-[#29a9eb]" },
+  ];
+  return (
+    <div className="glass-card mt-6 flex flex-wrap items-center justify-between gap-3 rounded-[28px] p-4 sm:p-5">
+      <div className="inline-flex items-center gap-2 text-sm font-bold">
+        <Share2 className="h-4 w-4" /> Share
+      </div>
+      <div className="flex items-center gap-2">
+        {items.map((s) => (
+          <a
+            key={s.label}
+            href={s.href}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`Share on ${s.label}`}
+            className={`grid h-10 w-10 place-items-center rounded-full text-xs font-black text-white shadow-md transition hover:opacity-90 ${s.cls}`}
+          >
+            {s.label[0]}
+          </a>
+        ))}
+        <button
+          type="button"
+          aria-label="Copy link"
+          onClick={() => { navigator.clipboard.writeText(url).then(() => toast.success("Link copied")); }}
+          className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/5 transition hover:bg-white/10"
+        >
+          <LinkIcon className="h-4 w-4" />
+        </button>
       </div>
     </div>
   );
