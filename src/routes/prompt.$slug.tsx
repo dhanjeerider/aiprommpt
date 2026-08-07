@@ -160,31 +160,36 @@ function PromptPage() {
 
 
         <div className="lg:sticky lg:top-28 lg:self-start">
-          {p.tool && (
-            <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-medium capitalize text-muted-foreground">
-              {p.tool.replace("-", " ")}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center rounded-full bg-foreground px-3 py-1 text-[11px] font-black uppercase tracking-widest text-background">
+              Prompt Detail
             </span>
-          )}
-          <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{p.title}</h1>
-          <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            <span className="inline-flex items-center gap-2">
-              <span className="grid h-6 w-6 place-items-center rounded-full bg-[image:var(--gradient-primary)] text-[10px] font-bold text-white">
-                {p.author.avatar}
+            {p.tool && (
+              <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-medium capitalize text-muted-foreground">
+                {p.tool.replace("-", " ")}
               </span>
-              {p.author.name}
-            </span>
-            <span>·</span>
-            <span className="inline-flex items-center gap-1">
-              <Star className="h-3.5 w-3.5 fill-current text-amber-500" />
-              {p.rating.toFixed(1)}
+            )}
+            {p.premium && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-[image:var(--gradient-primary)] px-2.5 py-1 text-[11px] font-bold text-white">
+                <Sparkles className="h-3 w-3" /> Premium
+              </span>
+            )}
+          </div>
+
+          <h1 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">{p.title}</h1>
+
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+            <span>
+              Shared by{" "}
+              <span className="font-bold text-primary">@{p.author.name.replace(/\s+/g, "")}</span>
             </span>
             {p.createdAt && (
               <>
                 <span>·</span>
-                <time dateTime={new Date(p.createdAt).toISOString()} className="text-xs">
+                <time dateTime={new Date(p.createdAt).toISOString()}>
                   {new Date(p.createdAt).toLocaleString(undefined, {
                     day: "numeric",
-                    month: "short",
+                    month: "long",
                     year: "numeric",
                     hour: "2-digit",
                     minute: "2-digit",
@@ -192,33 +197,49 @@ function PromptPage() {
                 </time>
               </>
             )}
+            <span>·</span>
+            <span className="inline-flex items-center gap-1">
+              <Star className="h-3.5 w-3.5 fill-current text-amber-500" />
+              {p.rating.toFixed(1)}
+            </span>
           </div>
-          <p className="mt-4 text-muted-foreground">{p.excerpt}</p>
 
-          <div className="mt-6 flex flex-wrap gap-2">
-            <CopyButton text={p.content} />
-            <SaveButton />
-            <LikeButton initial={p.likes} />
-          </div>
+          {p.excerpt && <p className="mt-4 text-muted-foreground">{p.excerpt}</p>}
 
           {prompts.map((text, i) => (
-            <div key={i} className="glass-card mt-6 rounded-3xl p-5">
+            <div key={i} className="glass-card mt-6 rounded-[28px] p-4 sm:p-5">
               <div className="flex items-center justify-between gap-3">
-                <h3 className="inline-flex items-center gap-2 text-sm font-semibold">
-                  {prompts.length > 1 && (
-                    <span className="grid h-5 w-5 place-items-center rounded-full bg-[image:var(--gradient-primary)] text-[10px] font-extrabold text-white">
-                      {i + 1}
-                    </span>
-                  )}
-                  Prompt{prompts.length > 1 ? ` ${i + 1}` : ""}
-                </h3>
-                <CopyButton text={text} className="px-3 py-1.5 text-xs" />
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-primary/15 text-primary">
+                    <Sparkles className="h-4 w-4" />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="text-[12px] font-black uppercase tracking-widest text-primary">
+                      Prompt{prompts.length > 1 ? ` ${i + 1}` : ""}
+                    </div>
+                    <div className="truncate text-[12px] text-muted-foreground">
+                      Optimized for {p.tool ? p.tool.replace("-", " ") : "ChatGPT & Gemini"}
+                    </div>
+                  </div>
+                </div>
+                <SaveButton />
               </div>
-              <pre className="mt-3 max-h-[600px] overflow-auto whitespace-pre-wrap break-words rounded-2xl border border-white/10 bg-black/30 p-4 font-mono text-[13px] leading-relaxed text-foreground">
-{text}
-              </pre>
+
+              <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                <p className="select-all whitespace-pre-wrap break-words text-[15px] font-medium leading-[1.7] text-foreground/90">
+                  {text}
+                </p>
+              </div>
+
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <CopyButton text={text} />
+                <LikeButton initial={p.likes} />
+              </div>
             </div>
           ))}
+
+          <ShareRow title={p.title} />
+
 
 
           {(p.tags ?? []).length > 0 && (
