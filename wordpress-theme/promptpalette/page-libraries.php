@@ -1,34 +1,29 @@
 <?php
 /**
  * Template Name: Libraries
+ * Description: Grid of every prompt library / category.
  *
  * @package PromptPalette
  */
 
 get_header();
-$libraries = get_terms( array( 'taxonomy' => 'prompt_library', 'hide_empty' => false ) );
 ?>
-<section>
-	<h1><?php the_title(); ?></h1>
-	<?php while ( have_posts() ) : the_post(); ?>
-		<div class="entry-content" style="margin-top:10px"><?php the_content(); ?></div>
-	<?php endwhile; ?>
-
-	<div class="cat-grid" style="margin-top:24px">
-		<?php if ( $libraries && ! is_wp_error( $libraries ) ) : ?>
-			<?php foreach ( $libraries as $lib ) : ?>
-				<a class="cat-card glass-card" href="<?php echo esc_url( get_term_link( $lib ) ); ?>">
-					<h3><?php echo esc_html( $lib->name ); ?></h3>
-					<p><?php echo esc_html( sprintf( _n( '%d prompt', '%d prompts', $lib->count, 'promptpalette' ), $lib->count ) ); ?></p>
-					<?php if ( $lib->description ) : ?>
-						<p><?php echo esc_html( wp_html_excerpt( $lib->description, 80, '…' ) ); ?></p>
-					<?php endif; ?>
-				</a>
-			<?php endforeach; ?>
-		<?php else : ?>
-			<p class="muted"><?php esc_html_e( 'No libraries yet — create them under Prompts → Libraries.', 'promptpalette' ); ?></p>
-		<?php endif; ?>
-	</div>
+<section class="grid-bg -mx-4 rounded-[36px] px-4 py-12 text-center sm:py-16">
+	<h1 class="text-3xl sm:text-5xl"><?php esc_html_e( 'Prompt', 'promptpalette' ); ?> <span class="gradient-text"><?php esc_html_e( 'Libraries', 'promptpalette' ); ?></span></h1>
+	<p class="mx-auto mt-4 max-w-lg text-sm text-muted-foreground sm:text-base"><?php esc_html_e( 'Browse curated collections and jump straight to the look you need.', 'promptpalette' ); ?></p>
 </section>
-<?php pp_ad( 'ad_slot_grid' ); ?>
+
+<section class="mt-10">
+	<?php pp_category_tiles( 60, true ); ?>
+</section>
+
+<?php while ( have_posts() ) : the_post(); ?>
+	<?php if ( trim( get_the_content() ) ) : ?>
+		<section class="glass-card mt-10 rounded-3xl p-7 sm:p-10">
+			<div class="pp-prose"><?php the_content(); ?></div>
+		</section>
+	<?php endif; ?>
+<?php endwhile; ?>
+
+<?php pp_ad_slot( 'ad_slot_grid', 'banner', 'mt-10' ); ?>
 <?php get_footer(); ?>
