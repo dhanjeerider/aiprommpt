@@ -1,0 +1,14 @@
+/*
+Theme Name: PromptPalette
+Theme URI: https://example.com/promptpalette
+Author: PromptPalette
+Description: Premium AI prompt library theme — dark navy glassmorphism, bento grids, prompt custom post type, multi-prompt packs, AdSense slots, UPI premium checkout, sitemap importer and a full theme admin panel. Compiled Tailwind CSS is loaded from assets/css/app.css.
+Version: 2.0.0
+Requires at least: 6.0
+Requires PHP: 7.4
+License: GPLv2 or later
+Text Domain: promptpalette
+Tags: blog, custom-logo, custom-menu, featured-images, translation-ready, full-width-template
+*/
+
+/* All styling lives in assets/css/app.css (compiled Tailwind v4 build). */
