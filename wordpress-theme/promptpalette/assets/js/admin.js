@@ -65,15 +65,15 @@
     e.preventDefault();
     $('#pp-links').append(
       '<div class="pp-row">' +
-        '<input type="text" name="pp_link_label[]" placeholder="Label" />' +
-        '<input type="text" name="pp_link_href[]" placeholder="/about or https://…" />' +
-        '<input type="text" name="pp_link_group[]" placeholder="Explore" />' +
-        '<button type="button" class="button pp-remove-link">×</button>' +
+        '<input type="text" name="link_label[]" placeholder="Label" />' +
+        '<input type="text" name="link_href[]" placeholder="/about or https://…" />' +
+        '<input type="text" name="link_group[]" placeholder="Explore" />' +
+        '<button type="button" class="button pp-remove-row">×</button>' +
         '</div>'
     );
   });
 
-  $(document).on('click', '.pp-remove-link', function (e) {
+  $(document).on('click', '.pp-remove-row', function (e) {
     e.preventDefault();
     $(this).closest('.pp-row').remove();
   });
